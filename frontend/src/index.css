@@ -1,0 +1,743 @@
+@import "tailwindcss";
+
+@variant dark (&:is(.dark *));
+
+@theme {
+  /* charcoal - dark base */
+  --color-charcoal-50: #f4f4f4;
+  --color-charcoal-100: #e0e0e0;
+  --color-charcoal-200: #b8b8b8;
+  --color-charcoal-300: #7a7a7a;
+  --color-charcoal-400: #4a4a4a;
+  --color-charcoal-500: #1b2021;
+  --color-charcoal-600: #171c1d;
+  --color-charcoal-700: #121617;
+  --color-charcoal-800: #0d1011;
+  --color-charcoal-900: #080a0a;
+
+  /* verdigris - soft blue from #A1C9F4 */
+  --color-verdigris-50: #f2f7fe;
+  --color-verdigris-100: #e0edfc;
+  --color-verdigris-200: #c5dcf9;
+  --color-verdigris-300: #a1c9f4;
+  --color-verdigris-400: #7eb0e8;
+  --color-verdigris-500: #5e96d4;
+  --color-verdigris-600: #4578b0;
+  --color-verdigris-700: #345c88;
+  --color-verdigris-800: #244060;
+
+  /* tuscan - peach/orange from #FFB482 */
+  --color-tuscan-50: #fff8f2;
+  --color-tuscan-100: #ffeed8;
+  --color-tuscan-200: #ffddb8;
+  --color-tuscan-300: #ffb482;
+  --color-tuscan-400: #e89868;
+  --color-tuscan-500: #cc7e50;
+  --color-tuscan-600: #a6643c;
+  --color-tuscan-700: #804d2e;
+  --color-tuscan-800: #5a3620;
+
+  /* sandy - pink/magenta from #FAB0E4 */
+  --color-sandy-50: #fef5fb;
+  --color-sandy-100: #fde8f6;
+  --color-sandy-200: #fbd0ed;
+  --color-sandy-300: #fab0e4;
+  --color-sandy-400: #e890d0;
+  --color-sandy-500: #d070b8;
+  --color-sandy-600: #b0569a;
+  --color-sandy-700: #884278;
+  --color-sandy-800: #602e55;
+
+  /* burnt - coral/salmon from #FF9F9B */
+  --color-burnt-50: #fff5f4;
+  --color-burnt-100: #ffe8e7;
+  --color-burnt-200: #ffd1cf;
+  --color-burnt-300: #ff9f9b;
+  --color-burnt-400: #f07e7a;
+  --color-burnt-500: #d96360;
+  --color-burnt-600: #b84d4a;
+  --color-burnt-700: #8e3b39;
+  --color-burnt-800: #642928;
+
+  /* mint - green from #8DE5A1 */
+  --color-mint-50: #f0fcf3;
+  --color-mint-100: #dcf8e3;
+  --color-mint-200: #bef0cb;
+  --color-mint-300: #8de5a1;
+  --color-mint-400: #68d080;
+  --color-mint-500: #4cb866;
+  --color-mint-600: #389a4f;
+  --color-mint-700: #2a763c;
+  --color-mint-800: #1e542b;
+
+  /* lavender - purple from #D0BBFF */
+  --color-lavender-50: #f6f2ff;
+  --color-lavender-100: #ede5ff;
+  --color-lavender-200: #dfd0ff;
+  --color-lavender-300: #d0bbff;
+  --color-lavender-400: #b89aee;
+  --color-lavender-500: #9e7cd6;
+  --color-lavender-600: #8060b4;
+  --color-lavender-700: #634890;
+  --color-lavender-800: #46326a;
+
+  /* warm - neutral surfaces tinted with #DEBB9B */
+  --color-warm-50: #fefcfa;
+  --color-warm-100: #faf5ef;
+  --color-warm-200: #f0e8de;
+  --color-warm-300: #e2d4c4;
+  --color-warm-400: #c4ad94;
+  --color-warm-500: #a08872;
+
+  --color-surface: #fefcfa;
+  --color-surface-secondary: #faf5ef;
+  --color-surface-tertiary: #f0e8de;
+
+  /* dark mode surface tokens */
+  --color-dark-bg: #141819;
+  --color-dark-card: #1e2425;
+  --color-dark-card-elevated: #262e30;
+  --color-dark-border: #2e3638;
+  --color-dark-border-subtle: #242c2e;
+  --color-dark-input: #1a2022;
+  --color-dark-text: #e4ddd5;
+  --color-dark-text-secondary: #a8a099;
+  --color-dark-text-muted: #6e6862;
+
+  --font-display: "Playfair Display", "Inter", serif;
+  --font-handwriting: "Playfair Display", "Inter", serif;
+  --font-body: "Inter", sans-serif;
+  --font-serif: "Playfair Display", "Inter", serif;
+}
+
+@layer base {
+  /* Prevent iOS zoom on input focus — force 16px minimum */
+  input, textarea, select, button {
+    font-size: 16px;
+  }
+
+  /* Disable touch callout and text selection on app shell (native feel) */
+  html {
+    -webkit-text-size-adjust: 100%;
+    touch-action: manipulation;
+  }
+
+  body {
+    font-family: var(--font-body);
+    background: linear-gradient(160deg, #fefcfa 0%, #fff5f4 30%, #f2f7fe 60%, #fef5fb 85%, #fefcfa 100%);
+    background-attachment: fixed;
+    color: var(--color-charcoal-500);
+    margin: 0;
+    min-height: 100vh;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    transition: background 0.3s ease, color 0.3s ease;
+    overscroll-behavior: none;
+  }
+
+  .dark body,
+  html.dark body {
+    background: var(--color-dark-bg);
+    color: var(--color-dark-text);
+  }
+
+  ::selection {
+    background-color: var(--color-burnt-200);
+    color: var(--color-charcoal-700);
+  }
+
+  .dark ::selection {
+    background-color: var(--color-burnt-700);
+    color: var(--color-burnt-100);
+  }
+}
+
+@layer utilities {
+  /* ---- Glass ---- */
+  .glass {
+    background: rgba(255, 255, 255, 0.8);
+    backdrop-filter: blur(16px);
+    -webkit-backdrop-filter: blur(16px);
+    border: 1px solid rgba(255, 255, 255, 0.6);
+  }
+  .dark .glass {
+    background: rgba(30, 36, 37, 0.85);
+    border: 1px solid var(--color-dark-border);
+  }
+
+  .glass-dark {
+    background: rgba(27, 32, 33, 0.15);
+    backdrop-filter: blur(16px);
+    -webkit-backdrop-filter: blur(16px);
+  }
+
+  /* ---- Text gradient ---- */
+  .text-gradient {
+    background: linear-gradient(135deg, var(--color-burnt-300), var(--color-sandy-300));
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+  }
+
+  /* ---- Shadows ---- */
+  .shadow-soft {
+    box-shadow: 0 2px 16px rgba(27, 32, 33, 0.04), 0 1px 4px rgba(27, 32, 33, 0.03);
+  }
+  .dark .shadow-soft {
+    box-shadow: 0 2px 12px rgba(0, 0, 0, 0.25);
+  }
+
+  .shadow-elevated {
+    box-shadow: 0 8px 24px rgba(27, 32, 33, 0.07), 0 2px 8px rgba(27, 32, 33, 0.04);
+  }
+  .dark .shadow-elevated {
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.35);
+  }
+
+  .book-shadow {
+    box-shadow:
+      0 20px 60px rgba(27, 32, 33, 0.12),
+      0 8px 20px rgba(27, 32, 33, 0.08),
+      inset 0 0 0 1px rgba(27, 32, 33, 0.05);
+  }
+
+  /* ---- Buttons ---- */
+  .btn-primary {
+    background: linear-gradient(135deg, var(--color-burnt-300), var(--color-sandy-300));
+    color: white;
+    border-radius: 1rem;
+    font-weight: 500;
+    transition: all 0.2s;
+  }
+  .btn-primary:hover {
+    background: linear-gradient(135deg, var(--color-burnt-400), var(--color-sandy-400));
+    box-shadow: 0 4px 16px rgba(255, 159, 155, 0.35);
+  }
+
+  /* ---- Card pastel ---- */
+  .card-pastel {
+    background: rgba(255, 255, 255, 0.85);
+    backdrop-filter: blur(8px);
+    border: 1px solid rgba(255, 255, 255, 0.7);
+    border-radius: 1.25rem;
+  }
+  .dark .card-pastel {
+    background: var(--color-dark-card);
+    border: 1px solid var(--color-dark-border);
+  }
+
+  /* ======= DARK MODE OVERRIDES ======= */
+
+  /* -- Surfaces -- */
+  .dark .bg-white {
+    background-color: var(--color-dark-card) !important;
+  }
+  .dark .bg-white\/60 {
+    background-color: rgba(30, 36, 37, 0.6) !important;
+  }
+
+  .dark .bg-warm-50,
+  .dark .bg-warm-50\/50 {
+    background-color: var(--color-dark-input) !important;
+  }
+  .dark .bg-warm-100,
+  .dark .bg-warm-100\/80,
+  .dark .bg-warm-100\/60 {
+    background-color: var(--color-dark-card-elevated) !important;
+  }
+  .dark .bg-warm-200,
+  .dark .bg-warm-200\/60 {
+    background-color: var(--color-dark-border) !important;
+  }
+
+  /* -- Colored light backgrounds -- */
+  .dark .bg-burnt-50,
+  .dark .bg-burnt-50\/60 {
+    background-color: rgba(255, 159, 155, 0.08) !important;
+  }
+  .dark .bg-sandy-50,
+  .dark .bg-sandy-50\/60 {
+    background-color: rgba(250, 176, 228, 0.08) !important;
+  }
+  .dark .bg-verdigris-50,
+  .dark .bg-verdigris-50\/60 {
+    background-color: rgba(161, 201, 244, 0.08) !important;
+  }
+  .dark .bg-tuscan-50 {
+    background-color: rgba(255, 180, 130, 0.08) !important;
+  }
+  .dark .bg-mint-50 {
+    background-color: rgba(141, 229, 161, 0.08) !important;
+  }
+  .dark .bg-lavender-50 {
+    background-color: rgba(208, 187, 255, 0.08) !important;
+  }
+
+  .dark .bg-burnt-100,
+  .dark .bg-burnt-100\/40 {
+    background-color: rgba(255, 159, 155, 0.12) !important;
+  }
+  .dark .bg-sandy-100 {
+    background-color: rgba(250, 176, 228, 0.12) !important;
+  }
+  .dark .bg-verdigris-100 {
+    background-color: rgba(161, 201, 244, 0.12) !important;
+  }
+
+  /* -- Borders -- */
+  .dark .border-warm-200\/60,
+  .dark .border-warm-200\/40,
+  .dark .border-warm-200\/30,
+  .dark .border-warm-200 {
+    border-color: var(--color-dark-border) !important;
+  }
+  .dark .border-warm-100,
+  .dark .border-warm-100\/40 {
+    border-color: var(--color-dark-border-subtle) !important;
+  }
+  .dark .border-burnt-100\/40,
+  .dark .border-burnt-200\/30 {
+    border-color: rgba(255, 159, 155, 0.12) !important;
+  }
+  .dark .border-sandy-100\/60 {
+    border-color: rgba(250, 176, 228, 0.1) !important;
+  }
+  .dark .border-verdigris-100\/40 {
+    border-color: rgba(161, 201, 244, 0.1) !important;
+  }
+
+  /* -- Text colors -- */
+  .dark .text-charcoal-700 {
+    color: var(--color-dark-text) !important;
+  }
+  .dark .text-charcoal-600 {
+    color: #ccc5be !important;
+  }
+  .dark .text-charcoal-500 {
+    color: var(--color-dark-text-secondary) !important;
+  }
+  .dark .text-charcoal-400 {
+    color: var(--color-dark-text-muted) !important;
+  }
+  .dark .text-warm-400 {
+    color: #5e5852 !important;
+  }
+  .dark .text-warm-300 {
+    color: #4a4440 !important;
+  }
+
+  /* -- Gradient backgrounds in dark -- */
+  .dark .from-burnt-50,
+  .dark .from-sandy-50,
+  .dark .from-warm-50 {
+    --tw-gradient-from: var(--color-dark-card) !important;
+  }
+  .dark .to-sandy-50,
+  .dark .to-tuscan-50,
+  .dark .to-warm-100\/50 {
+    --tw-gradient-to: var(--color-dark-card-elevated) !important;
+  }
+
+  .dark .bg-gradient-to-br.from-warm-50 {
+    background: var(--color-dark-bg) !important;
+  }
+
+  /* -- Form elements -- */
+  .dark input,
+  .dark textarea,
+  .dark select {
+    background-color: var(--color-dark-input) !important;
+    border-color: var(--color-dark-border) !important;
+    color: var(--color-dark-text) !important;
+  }
+  .dark input::placeholder,
+  .dark textarea::placeholder {
+    color: var(--color-dark-text-muted) !important;
+  }
+  .dark input:focus,
+  .dark textarea:focus,
+  .dark select:focus {
+    border-color: var(--color-burnt-400) !important;
+  }
+}
+
+/* ====================================================
+   COLOR THEMES — override accent colors via html class
+   ==================================================== */
+
+/* Coral (Default) — no class needed, uses base colors */
+
+/* Ocean — blue/teal tones */
+html.theme-ocean {
+  --color-burnt-50: #f0f7ff;
+  --color-burnt-100: #dceeff;
+  --color-burnt-200: #b8dcff;
+  --color-burnt-300: #5ba3e6;
+  --color-burnt-400: #3d8ad4;
+  --color-burnt-500: #2a72b8;
+  --color-burnt-600: #1d5c98;
+  --color-burnt-700: #154676;
+  --color-burnt-800: #0f3254;
+
+  --color-sandy-50: #f0fffe;
+  --color-sandy-100: #d5faf6;
+  --color-sandy-200: #aaf0ea;
+  --color-sandy-300: #5ec4bb;
+  --color-sandy-400: #40aea5;
+  --color-sandy-500: #2e9690;
+  --color-sandy-600: #207a74;
+  --color-sandy-700: #185e5a;
+  --color-sandy-800: #104240;
+
+  --color-tuscan-50: #f2f8ff;
+  --color-tuscan-100: #e0efff;
+  --color-tuscan-200: #c0deff;
+  --color-tuscan-300: #80b8f0;
+  --color-tuscan-400: #5c9ae0;
+  --color-tuscan-500: #4080c8;
+  --color-tuscan-600: #3068a8;
+  --color-tuscan-700: #245088;
+  --color-tuscan-800: #183860;
+}
+html.theme-ocean body {
+  background: linear-gradient(160deg, #f0f7ff 0%, #e8f4ff 30%, #f0fffe 60%, #e0efff 85%, #f0f7ff 100%);
+}
+html.dark.theme-ocean { --color-dark-bg: #121820; }
+html.dark.theme-ocean body { background: #121820; }
+
+/* Sunset — warm amber/orange/red */
+html.theme-sunset {
+  --color-burnt-50: #fff8f0;
+  --color-burnt-100: #ffedd8;
+  --color-burnt-200: #ffd8aa;
+  --color-burnt-300: #f0a050;
+  --color-burnt-400: #e08830;
+  --color-burnt-500: #c87020;
+  --color-burnt-600: #a85a18;
+  --color-burnt-700: #884412;
+  --color-burnt-800: #60300c;
+
+  --color-sandy-50: #fff5f0;
+  --color-sandy-100: #ffe8d8;
+  --color-sandy-200: #ffd0b0;
+  --color-sandy-300: #f08060;
+  --color-sandy-400: #e06848;
+  --color-sandy-500: #c85238;
+  --color-sandy-600: #a84030;
+  --color-sandy-700: #883028;
+  --color-sandy-800: #602020;
+
+  --color-tuscan-50: #fffaf0;
+  --color-tuscan-100: #fff0d0;
+  --color-tuscan-200: #ffe0a0;
+  --color-tuscan-300: #f0c060;
+  --color-tuscan-400: #e0a840;
+  --color-tuscan-500: #c89030;
+  --color-tuscan-600: #a87820;
+  --color-tuscan-700: #886018;
+  --color-tuscan-800: #604410;
+}
+html.theme-sunset body {
+  background: linear-gradient(160deg, #fffaf5 0%, #fff5ea 30%, #fff8f0 60%, #fffaf0 85%, #fffaf5 100%);
+}
+html.dark.theme-sunset { --color-dark-bg: #1a1612; }
+html.dark.theme-sunset body { background: #1a1612; }
+
+/* Garden — green/emerald tones */
+html.theme-garden {
+  --color-burnt-50: #f0faf4;
+  --color-burnt-100: #d8f0e0;
+  --color-burnt-200: #b0e0c0;
+  --color-burnt-300: #50b878;
+  --color-burnt-400: #38a060;
+  --color-burnt-500: #288850;
+  --color-burnt-600: #1c7040;
+  --color-burnt-700: #145830;
+  --color-burnt-800: #0e4020;
+
+  --color-sandy-50: #f5fdf8;
+  --color-sandy-100: #e0f8ea;
+  --color-sandy-200: #c0f0d8;
+  --color-sandy-300: #68d498;
+  --color-sandy-400: #48c080;
+  --color-sandy-500: #30a868;
+  --color-sandy-600: #209050;
+  --color-sandy-700: #187040;
+  --color-sandy-800: #105030;
+
+  --color-tuscan-50: #f8fdf0;
+  --color-tuscan-100: #eef8d8;
+  --color-tuscan-200: #d8f0b0;
+  --color-tuscan-300: #a0d860;
+  --color-tuscan-400: #88c048;
+  --color-tuscan-500: #70a838;
+  --color-tuscan-600: #5c9028;
+  --color-tuscan-700: #487020;
+  --color-tuscan-800: #345018;
+}
+html.theme-garden body {
+  background: linear-gradient(160deg, #f5fdf8 0%, #f0faf4 30%, #f8fdf0 60%, #f5fdf8 85%, #f5fdf8 100%);
+}
+html.dark.theme-garden { --color-dark-bg: #121a16; }
+html.dark.theme-garden body { background: #121a16; }
+
+/* Lavender — purple/violet tones */
+html.theme-lavender {
+  --color-burnt-50: #f8f5ff;
+  --color-burnt-100: #f0e8ff;
+  --color-burnt-200: #e0d0ff;
+  --color-burnt-300: #b088e8;
+  --color-burnt-400: #9870d8;
+  --color-burnt-500: #8058c0;
+  --color-burnt-600: #6840a0;
+  --color-burnt-700: #503080;
+  --color-burnt-800: #382060;
+
+  --color-sandy-50: #fdf5ff;
+  --color-sandy-100: #f8e0ff;
+  --color-sandy-200: #f0c8ff;
+  --color-sandy-300: #d088e8;
+  --color-sandy-400: #c068d8;
+  --color-sandy-500: #a850c0;
+  --color-sandy-600: #8c40a0;
+  --color-sandy-700: #703080;
+  --color-sandy-800: #502060;
+
+  --color-tuscan-50: #f8f2ff;
+  --color-tuscan-100: #f0e0ff;
+  --color-tuscan-200: #e8d0ff;
+  --color-tuscan-300: #c098f0;
+  --color-tuscan-400: #a880e0;
+  --color-tuscan-500: #9068c8;
+  --color-tuscan-600: #7850a8;
+  --color-tuscan-700: #603888;
+  --color-tuscan-800: #482860;
+}
+html.theme-lavender body {
+  background: linear-gradient(160deg, #faf5ff 0%, #f8f5ff 30%, #fdf5ff 60%, #f8f2ff 85%, #faf5ff 100%);
+}
+html.dark.theme-lavender { --color-dark-bg: #18141e; }
+html.dark.theme-lavender body { background: #18141e; }
+
+/* Rose — pink/rose tones */
+html.theme-rose {
+  --color-burnt-50: #fff5f8;
+  --color-burnt-100: #ffe0ea;
+  --color-burnt-200: #ffc0d8;
+  --color-burnt-300: #e8688a;
+  --color-burnt-400: #d85070;
+  --color-burnt-500: #c03858;
+  --color-burnt-600: #a02848;
+  --color-burnt-700: #802038;
+  --color-burnt-800: #601828;
+
+  --color-sandy-50: #fff0f5;
+  --color-sandy-100: #ffd8e8;
+  --color-sandy-200: #ffb8d8;
+  --color-sandy-300: #f080a8;
+  --color-sandy-400: #e06890;
+  --color-sandy-500: #c85078;
+  --color-sandy-600: #a84060;
+  --color-sandy-700: #883048;
+  --color-sandy-800: #682038;
+
+  --color-tuscan-50: #fff5f6;
+  --color-tuscan-100: #ffe8ed;
+  --color-tuscan-200: #ffd0dd;
+  --color-tuscan-300: #f098b0;
+  --color-tuscan-400: #e08098;
+  --color-tuscan-500: #c86880;
+  --color-tuscan-600: #a85068;
+  --color-tuscan-700: #883850;
+  --color-tuscan-800: #602838;
+}
+html.theme-rose body {
+  background: linear-gradient(160deg, #fff5f8 0%, #fff0f5 30%, #fff5f6 60%, #fff5f8 85%, #fff5f8 100%);
+}
+html.dark.theme-rose { --color-dark-bg: #1a1216; }
+html.dark.theme-rose body { background: #1a1216; }
+
+/* Midnight — deep dark accents */
+html.theme-midnight {
+  --color-burnt-50: #f2f4f8;
+  --color-burnt-100: #e0e4ee;
+  --color-burnt-200: #c0c8dd;
+  --color-burnt-300: #6878a8;
+  --color-burnt-400: #506898;
+  --color-burnt-500: #405888;
+  --color-burnt-600: #304870;
+  --color-burnt-700: #243858;
+  --color-burnt-800: #182840;
+
+  --color-sandy-50: #f0f4f8;
+  --color-sandy-100: #d8e0ee;
+  --color-sandy-200: #b0c0dd;
+  --color-sandy-300: #5878b0;
+  --color-sandy-400: #4068a0;
+  --color-sandy-500: #305890;
+  --color-sandy-600: #204878;
+  --color-sandy-700: #183860;
+  --color-sandy-800: #102848;
+
+  --color-tuscan-50: #f4f6fa;
+  --color-tuscan-100: #e4e8f0;
+  --color-tuscan-200: #c8d0e0;
+  --color-tuscan-300: #8090b8;
+  --color-tuscan-400: #6880a8;
+  --color-tuscan-500: #507098;
+  --color-tuscan-600: #3c5880;
+  --color-tuscan-700: #2c4468;
+  --color-tuscan-800: #1e3050;
+}
+html.theme-midnight body {
+  background: linear-gradient(160deg, #f0f2f6 0%, #eef0f5 30%, #f0f4f8 60%, #f4f6fa 85%, #f0f2f6 100%);
+}
+html.dark.theme-midnight { --color-dark-bg: #10141a; }
+html.dark.theme-midnight body { background: #10141a; }
+
+/* Blush — rosa pastel degradado */
+html.theme-blush {
+  --color-burnt-50: #fef5f8;
+  --color-burnt-100: #fde8ef;
+  --color-burnt-200: #f8c8d8;
+  --color-burnt-300: #f8b4c8;
+  --color-burnt-400: #e898b0;
+  --color-burnt-500: #d8809a;
+  --color-burnt-600: #c06882;
+  --color-burnt-700: #a0506a;
+  --color-burnt-800: #783850;
+
+  --color-sandy-50: #f8f0f8;
+  --color-sandy-100: #f0e0f0;
+  --color-sandy-200: #e0c0e0;
+  --color-sandy-300: #c8a8e8;
+  --color-sandy-400: #b090d0;
+  --color-sandy-500: #9878b8;
+  --color-sandy-600: #806098;
+  --color-sandy-700: #684880;
+  --color-sandy-800: #483060;
+
+  --color-tuscan-50: #fef2f6;
+  --color-tuscan-100: #fce0ea;
+  --color-tuscan-200: #f8c0d4;
+  --color-tuscan-300: #e8a0b8;
+  --color-tuscan-400: #d888a0;
+  --color-tuscan-500: #c07088;
+  --color-tuscan-600: #a05870;
+  --color-tuscan-700: #804058;
+  --color-tuscan-800: #603040;
+}
+html.theme-blush body {
+  background: linear-gradient(160deg, #fef5f8 0%, #fde8ef 30%, #f8f0f8 60%, #fce0ea 85%, #fef5f8 100%);
+}
+html.dark.theme-blush { --color-dark-bg: #1a1418; }
+html.dark.theme-blush body { background: #1a1418; }
+
+/* Berry — rosa intenso a morado */
+html.theme-berry {
+  --color-burnt-50: #fef0f4;
+  --color-burnt-100: #fcdce6;
+  --color-burnt-200: #f8b0c8;
+  --color-burnt-300: #e85080;
+  --color-burnt-400: #d04070;
+  --color-burnt-500: #b83060;
+  --color-burnt-600: #982050;
+  --color-burnt-700: #781840;
+  --color-burnt-800: #581030;
+
+  --color-sandy-50: #f8f0fa;
+  --color-sandy-100: #f0ddf5;
+  --color-sandy-200: #e0b8ea;
+  --color-sandy-300: #a848d0;
+  --color-sandy-400: #9038b8;
+  --color-sandy-500: #7830a0;
+  --color-sandy-600: #602880;
+  --color-sandy-700: #482068;
+  --color-sandy-800: #301848;
+
+  --color-tuscan-50: #fdf0f8;
+  --color-tuscan-100: #faddf0;
+  --color-tuscan-200: #f0b0d8;
+  --color-tuscan-300: #d060a0;
+  --color-tuscan-400: #b84888;
+  --color-tuscan-500: #a03870;
+  --color-tuscan-600: #882858;
+  --color-tuscan-700: #682040;
+  --color-tuscan-800: #481830;
+}
+html.theme-berry body {
+  background: linear-gradient(160deg, #fef0f4 0%, #fcdce6 30%, #f8f0fa 60%, #faddf0 85%, #fef0f4 100%);
+}
+html.dark.theme-berry { --color-dark-bg: #1a1218; }
+html.dark.theme-berry body { background: #1a1218; }
+
+/* Sky — celeste a lila suave */
+html.theme-sky {
+  --color-burnt-50: #f0f8ff;
+  --color-burnt-100: #e0f0ff;
+  --color-burnt-200: #b8ddf8;
+  --color-burnt-300: #88c8f8;
+  --color-burnt-400: #68b0e8;
+  --color-burnt-500: #5098d0;
+  --color-burnt-600: #3880b0;
+  --color-burnt-700: #286890;
+  --color-burnt-800: #1c4868;
+
+  --color-sandy-50: #f5f0ff;
+  --color-sandy-100: #ece0ff;
+  --color-sandy-200: #d8c0f8;
+  --color-sandy-300: #b8a8f8;
+  --color-sandy-400: #a090e0;
+  --color-sandy-500: #8878c8;
+  --color-sandy-600: #7060a8;
+  --color-sandy-700: #584888;
+  --color-sandy-800: #403068;
+
+  --color-tuscan-50: #f2f5ff;
+  --color-tuscan-100: #e4eaff;
+  --color-tuscan-200: #c8d4f8;
+  --color-tuscan-300: #90a8e8;
+  --color-tuscan-400: #7890d0;
+  --color-tuscan-500: #6078b8;
+  --color-tuscan-600: #486098;
+  --color-tuscan-700: #384878;
+  --color-tuscan-800: #283058;
+}
+html.theme-sky body {
+  background: linear-gradient(160deg, #f0f8ff 0%, #e0f0ff 30%, #f5f0ff 60%, #e4eaff 85%, #f0f8ff 100%);
+}
+html.dark.theme-sky { --color-dark-bg: #121820; }
+html.dark.theme-sky body { background: #121820; }
+
+/* Custom — uses CSS variable */
+html.theme-custom {
+  --color-burnt-50: color-mix(in srgb, var(--custom-accent) 5%, white);
+  --color-burnt-100: color-mix(in srgb, var(--custom-accent) 12%, white);
+  --color-burnt-200: color-mix(in srgb, var(--custom-accent) 25%, white);
+  --color-burnt-300: var(--custom-accent);
+  --color-burnt-400: color-mix(in srgb, var(--custom-accent) 85%, black);
+  --color-burnt-500: color-mix(in srgb, var(--custom-accent) 70%, black);
+  --color-burnt-600: color-mix(in srgb, var(--custom-accent) 55%, black);
+  --color-burnt-700: color-mix(in srgb, var(--custom-accent) 40%, black);
+  --color-burnt-800: color-mix(in srgb, var(--custom-accent) 25%, black);
+
+  --color-sandy-50: color-mix(in srgb, var(--custom-accent) 3%, white);
+  --color-sandy-100: color-mix(in srgb, var(--custom-accent) 8%, white);
+  --color-sandy-200: color-mix(in srgb, var(--custom-accent) 18%, white);
+  --color-sandy-300: color-mix(in srgb, var(--custom-accent) 60%, white);
+  --color-sandy-400: color-mix(in srgb, var(--custom-accent) 50%, white 30%);
+  --color-sandy-500: color-mix(in srgb, var(--custom-accent) 50%, black 20%);
+  --color-sandy-600: color-mix(in srgb, var(--custom-accent) 40%, black 30%);
+  --color-sandy-700: color-mix(in srgb, var(--custom-accent) 30%, black 40%);
+  --color-sandy-800: color-mix(in srgb, var(--custom-accent) 20%, black 50%);
+
+  --color-tuscan-50: color-mix(in srgb, var(--custom-accent) 4%, white);
+  --color-tuscan-100: color-mix(in srgb, var(--custom-accent) 10%, white);
+  --color-tuscan-200: color-mix(in srgb, var(--custom-accent) 20%, white);
+  --color-tuscan-300: color-mix(in srgb, var(--custom-accent) 50%, white 20%);
+  --color-tuscan-400: color-mix(in srgb, var(--custom-accent) 60%, black 10%);
+  --color-tuscan-500: color-mix(in srgb, var(--custom-accent) 50%, black 20%);
+  --color-tuscan-600: color-mix(in srgb, var(--custom-accent) 40%, black 30%);
+  --color-tuscan-700: color-mix(in srgb, var(--custom-accent) 30%, black 40%);
+  --color-tuscan-800: color-mix(in srgb, var(--custom-accent) 20%, black 50%);
+}

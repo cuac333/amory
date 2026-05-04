@@ -1,0 +1,68 @@
+version: "3.8"
+
+services:
+  db:
+    image: postgres:16-alpine
+    container_name: amory-db
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: amory
+      POSTGRES_PASSWORD: ${DB_PASSWORD:-amory_secret_2026}
+      POSTGRES_DB: amory
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U amory"]
+      interval: 5s
+      timeout: 3s
+      retries: 5
+
+  backend:
+    build: ./backend
+    container_name: amory-backend
+    restart: unless-stopped
+    environment:
+      - DATABASE_URL=postgresql://amory:${DB_PASSWORD:-amory_secret_2026}@db:5432/amory
+      - SECRET_KEY=${SECRET_KEY:-cambiar-en-produccion-clave-segura-2026}
+      - CORS_ORIGINS=${CORS_ORIGINS:-https://amory.example.com,http://localhost:5173}
+      - VAPID_PUBLIC_KEY=${VAPID_PUBLIC_KEY:-}
+      - VAPID_PRIVATE_KEY=${VAPID_PRIVATE_KEY:-}
+      - VAPID_EMAIL=${VAPID_EMAIL:-mailto:amory@example.com}
+      - TICKETMASTER_API_KEY=${TICKETMASTER_API_KEY:-}
+      - TICKETMASTER_POLL_SECONDS=${TICKETMASTER_POLL_SECONDS:-300}
+      - TICKETMASTER_COUNTRY=${TICKETMASTER_COUNTRY:-}
+    volumes:
+      - backend-uploads:/app/app/uploads
+    depends_on:
+      db:
+        condition: service_healthy
+
+  caddy:
+    image: caddy:2-alpine
+    container_name: amory-caddy
+    restart: unless-stopped
+    environment:
+      - DOMAIN=${DOMAIN:-localhost}
+    ports:
+      - "80:80"
+      - "443:443"
+    volumes:
+      - ./Caddyfile:/etc/caddy/Caddyfile
+      - caddy-data:/data
+      - caddy-config:/config
+    depends_on:
+      - backend
+      - frontend
+
+  frontend:
+    build: ./frontend
+    container_name: amory-frontend
+    restart: unless-stopped
+    depends_on:
+      - backend
+
+volumes:
+  pgdata:
+  backend-uploads:
+  caddy-data:
+  caddy-config:

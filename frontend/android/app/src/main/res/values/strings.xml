@@ -1,0 +1,7 @@
+<?xml version='1.0' encoding='utf-8'?>
+<resources>
+    <string name="app_name">Amory</string>
+    <string name="title_activity_main">Amory</string>
+    <string name="package_name">com.amory.app</string>
+    <string name="custom_url_scheme">com.amory.app</string>
+</resources>
