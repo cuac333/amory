@@ -17,7 +17,7 @@ router = APIRouter(prefix="/diary", tags=["diary"])
 
 def require_couple(user: User):
     if not user.couple_id:
-        raise HTTPException(status_code=400, detail="Debes pertenecer a una pareja")
+        raise HTTPException(status_code=400, detail="你需要属于一个情侣")
     return user.couple_id
 
 
@@ -67,7 +67,7 @@ def create_entry(data: DiaryEntryCreate, user: User = Depends(get_current_user),
 def update_entry(entry_id: int, data: DiaryEntryUpdate, user: User = Depends(get_current_user), session: Session = Depends(get_session)):
     entry = session.get(DiaryEntry, entry_id)
     if not entry or entry.user_id != user.id:
-        raise HTTPException(status_code=404, detail="Entrada no encontrada")
+        raise HTTPException(status_code=404, detail="日记未找到")
 
     for key, value in data.model_dump(exclude_unset=True).items():
         setattr(entry, key, value)
@@ -82,7 +82,7 @@ def update_entry(entry_id: int, data: DiaryEntryUpdate, user: User = Depends(get
 def delete_entry(entry_id: int, user: User = Depends(get_current_user), session: Session = Depends(get_session)):
     entry = session.get(DiaryEntry, entry_id)
     if not entry or entry.user_id != user.id:
-        raise HTTPException(status_code=404, detail="Entrada no encontrada")
+        raise HTTPException(status_code=404, detail="日记未找到")
     session.delete(entry)
     session.commit()
     return {"ok": True}
@@ -92,7 +92,7 @@ def delete_entry(entry_id: int, user: User = Depends(get_current_user), session:
 def upload_diary_photo(entry_id: int, file: UploadFile = File(...), user: User = Depends(get_current_user), session: Session = Depends(get_session)):
     entry = session.get(DiaryEntry, entry_id)
     if not entry or entry.user_id != user.id:
-        raise HTTPException(status_code=404, detail="Entrada no encontrada")
+        raise HTTPException(status_code=404, detail="日记未找到")
 
     UPLOADS_IMAGES_DIR.mkdir(parents=True, exist_ok=True)
     filename = f"diary_{entry_id}_{file.filename}"

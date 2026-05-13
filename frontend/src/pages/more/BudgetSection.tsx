@@ -19,11 +19,11 @@ import DeleteButton from "../../components/shared/DeleteButton";
 // ─── Default categories ───
 
 const DEFAULT_CATEGORIES = [
-  { key: "food", label: "Comida", icon: UtensilsCrossed, color: "#c4734d" },
-  { key: "entertainment", label: "Entretenimiento", icon: Film, color: "#9b6b8a" },
-  { key: "travel", label: "Viaje", icon: Plane, color: "#2dd4bf" },
-  { key: "gifts", label: "Regalos", icon: Gift, color: "#dfc48e" },
-  { key: "other", label: "Otro", icon: MoreHorizontal, color: "#a0a0a0" },
+  { key: "food", label: "美食", icon: UtensilsCrossed, color: "#c4734d" },
+  { key: "entertainment", label: "娱乐", icon: Film, color: "#9b6b8a" },
+  { key: "travel", label: "旅行", icon: Plane, color: "#2dd4bf" },
+  { key: "gifts", label: "礼物", icon: Gift, color: "#dfc48e" },
+  { key: "other", label: "其他", icon: MoreHorizontal, color: "#a0a0a0" },
 ];
 
 const CUSTOM_COLORS = ["#f0a0ac", "#c084d8", "#f0d050", "#8b4226", "#6bb5e0", "#7dc87d", "#e08050", "#b0b0e0"];

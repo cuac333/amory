@@ -15,7 +15,7 @@ router = APIRouter(prefix="/wishlist", tags=["wishlist"])
 
 def require_couple(user: User):
     if not user.couple_id:
-        raise HTTPException(status_code=400, detail="Debes pertenecer a una pareja")
+        raise HTTPException(status_code=400, detail="你需要属于一个情侣")
     return user.couple_id
 
 
@@ -79,7 +79,7 @@ def update_wishlist_item(item_id: int, data: WishlistItemUpdate, user: User = De
     couple_id = require_couple(user)
     item = session.get(WishlistItem, item_id)
     if not item or item.couple_id != couple_id:
-        raise HTTPException(status_code=404, detail="Item no encontrado")
+        raise HTTPException(status_code=404, detail="心愿未找到")
 
     for key, value in data.model_dump(exclude_unset=True).items():
         setattr(item, key, value)
@@ -100,7 +100,7 @@ def complete_wishlist_item(item_id: int, data: WishlistItemComplete, user: User 
     couple_id = require_couple(user)
     item = session.get(WishlistItem, item_id)
     if not item or item.couple_id != couple_id:
-        raise HTTPException(status_code=404, detail="Item no encontrado")
+        raise HTTPException(status_code=404, detail="心愿未找到")
 
     item.completed = True
     item.completed_at = datetime.utcnow()
@@ -123,7 +123,7 @@ def delete_wishlist_item(item_id: int, user: User = Depends(get_current_user), s
     couple_id = require_couple(user)
     item = session.get(WishlistItem, item_id)
     if not item or item.couple_id != couple_id:
-        raise HTTPException(status_code=404, detail="Item no encontrado")
+        raise HTTPException(status_code=404, detail="心愿未找到")
     session.delete(item)
     session.commit()
     return {"ok": True}

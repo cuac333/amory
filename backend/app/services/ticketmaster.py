@@ -15,7 +15,7 @@ class TicketmasterError(Exception):
 
 def _request(path: str, params: dict, timeout: int = 15) -> dict:
     if not TICKETMASTER_API_KEY:
-        raise TicketmasterError("TICKETMASTER_API_KEY no está configurada")
+        raise TicketmasterError("TICKETMASTER_API_KEY 未配置")
     params = {**params, "apikey": TICKETMASTER_API_KEY}
     url = f"{DISCOVERY_BASE}{path}?{urllib.parse.urlencode(params)}"
     req = urllib.request.Request(url, headers={"Accept": "application/json", "User-Agent": "Amory/1.0"})
@@ -121,13 +121,13 @@ def notification_for_status_change(previous: Optional[str], current: str) -> Opt
         return None
 
     if curr == "onsale":
-        return ("¡Boletas disponibles!", "Ya hay boletas a la venta — corre a comprarlas.")
+        return ("门票开售！", "门票已开始销售——快去购买吧。")
     if curr == "offsale" and prev == "onsale":
-        return ("Ventas cerradas", "Las boletas ya no están disponibles.")
+        return ("售票结束", "门票已不再销售。")
     if curr == "cancelled":
-        return ("Evento cancelado", "Ticketmaster marcó el evento como cancelado.")
+        return ("活动取消", "Ticketmaster已将该活动标记为取消。")
     if curr == "rescheduled":
-        return ("Evento reprogramado", "La fecha del evento cambió, revisa los detalles.")
+        return ("活动改期", "活动日期已更改，请查看详情。")
     if curr == "postponed":
-        return ("Evento pospuesto", "El evento fue pospuesto.")
+        return ("活动延期", "活动已被推迟。")
     return None

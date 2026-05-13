@@ -18,7 +18,7 @@ router = APIRouter(prefix="/outings", tags=["outings"])
 
 def require_couple(user: User):
     if not user.couple_id:
-        raise HTTPException(status_code=400, detail="Debes pertenecer a una pareja")
+        raise HTTPException(status_code=400, detail="你需要属于一个情侣")
     return user.couple_id
 
 
@@ -99,7 +99,7 @@ def update_outing(outing_id: int, data: OutingUpdate, user: User = Depends(get_c
     couple_id = require_couple(user)
     outing = session.get(Outing, outing_id)
     if not outing or outing.couple_id != couple_id:
-        raise HTTPException(status_code=404, detail="Salida no encontrada")
+        raise HTTPException(status_code=404, detail="约会未找到")
 
     for key, value in data.model_dump(exclude_unset=True).items():
         setattr(outing, key, value)
@@ -114,7 +114,7 @@ def vote_outing(outing_id: int, data: OutingVoteCreate, user: User = Depends(get
     couple_id = require_couple(user)
     outing = session.get(Outing, outing_id)
     if not outing or outing.couple_id != couple_id:
-        raise HTTPException(status_code=404, detail="Salida no encontrada")
+        raise HTTPException(status_code=404, detail="约会未找到")
 
     # Check if user already voted — no duplicate vote
     existing = session.exec(
@@ -141,7 +141,7 @@ def complete_outing(outing_id: int, user: User = Depends(get_current_user), sess
     couple_id = require_couple(user)
     outing = session.get(Outing, outing_id)
     if not outing or outing.couple_id != couple_id:
-        raise HTTPException(status_code=404, detail="Salida no encontrada")
+        raise HTTPException(status_code=404, detail="约会未找到")
 
     uid = str(user.id)
     confirmed = set(outing.complete_confirmed_by.split(",")) if outing.complete_confirmed_by else set()
@@ -169,7 +169,7 @@ def document_outing(
     couple_id = require_couple(user)
     outing = session.get(Outing, outing_id)
     if not outing or outing.couple_id != couple_id:
-        raise HTTPException(status_code=404, detail="Salida no encontrada")
+        raise HTTPException(status_code=404, detail="约会未找到")
 
     UPLOADS_IMAGES_DIR.mkdir(parents=True, exist_ok=True)
     filename = f"outing_{outing_id}_{user.id}_{file.filename}"
@@ -194,7 +194,7 @@ def get_outing_documents(outing_id: int, user: User = Depends(get_current_user),
     couple_id = require_couple(user)
     outing = session.get(Outing, outing_id)
     if not outing or outing.couple_id != couple_id:
-        raise HTTPException(status_code=404, detail="Salida no encontrada")
+        raise HTTPException(status_code=404, detail="约会未找到")
 
     docs = session.exec(
         select(OutingDocument).where(OutingDocument.outing_id == outing_id)
@@ -248,7 +248,7 @@ def toggle_bucket_item(item_id: int, user: User = Depends(get_current_user), ses
     couple_id = require_couple(user)
     item = session.get(BucketListItem, item_id)
     if not item or item.couple_id != couple_id:
-        raise HTTPException(status_code=404, detail="Item no encontrado")
+        raise HTTPException(status_code=404, detail="项目未找到")
 
     uid = str(user.id)
     confirmed = set(item.confirmed_by.split(",")) if item.confirmed_by else set()

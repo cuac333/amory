@@ -17,7 +17,7 @@ router = APIRouter(prefix="/notifications", tags=["notifications"])
 
 def require_couple(user: User):
     if not user.couple_id:
-        raise HTTPException(status_code=400, detail="Debes pertenecer a una pareja")
+        raise HTTPException(status_code=400, detail="你需要属于一个情侣")
     return user.couple_id
 
 
@@ -137,7 +137,7 @@ def test_notification(
     session: Session = Depends(get_session),
 ):
     """Send a test notification to the current user."""
-    send_push_to_user(user.id, "Amory", "Las notificaciones funcionan! 💕", "/", session)
+    send_push_to_user(user.id, "Amory", "通知正常运行！💕", "/", session)
     return {"ok": True}
 
 
@@ -196,10 +196,10 @@ def check_event_reminders(
             matches_tomorrow = ev_date == tomorrow
 
         if matches_today:
-            send_push_to_user(user.id, "Hoy!", f"{ev.title}", "/more", session)
+            send_push_to_user(user.id, "今天！", f"{ev.title}", "/more", session)
             reminders_sent += 1
         elif matches_tomorrow:
-            send_push_to_user(user.id, "Manana", f"{ev.title} es manana!", "/more", session)
+            send_push_to_user(user.id, "明天", f"{ev.title}就在明天！", "/more", session)
             reminders_sent += 1
 
     # Also check anniversary
@@ -211,10 +211,10 @@ def check_event_reminders(
             ann_this_year = ann_this_year.date()
         if ann_this_year == today:
             years = today.year - ann_date.year
-            send_push_to_user(user.id, "Feliz Aniversario!", f"Hoy cumplen {years} {'ano' if years == 1 else 'anos'} juntos!", "/", session)
+            send_push_to_user(user.id, "纪念日快乐！", f"今天是你们在一起{years}周年！", "/", session)
             reminders_sent += 1
         elif ann_this_year == tomorrow:
-            send_push_to_user(user.id, "Manana es su aniversario!", "No olviden celebrar", "/", session)
+            send_push_to_user(user.id, "明天是你们的纪念日！", "别忘了庆祝", "/", session)
             reminders_sent += 1
 
     return {"reminders_sent": reminders_sent}

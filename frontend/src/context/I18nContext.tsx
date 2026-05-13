@@ -11,7 +11,7 @@ const I18nContext = createContext<I18nContextType | null>(null);
 
 export function I18nProvider({ children }: { children: ReactNode }) {
   const [locale, setLocaleState] = useState<Locale>(() => {
-    return (localStorage.getItem("locale") as Locale) || "es";
+    return (localStorage.getItem("locale") as Locale) || "zh";
   });
 
   const setLocale = (l: Locale) => {

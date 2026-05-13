@@ -27,7 +27,7 @@ log = logging.getLogger("amory.tickets")
 
 def _require_couple(user: User) -> int:
     if not user.couple_id:
-        raise HTTPException(status_code=400, detail="Debes pertenecer a una pareja")
+        raise HTTPException(status_code=400, detail="你需要属于一个情侣")
     return user.couple_id
 
 
@@ -133,7 +133,7 @@ def check_now(
     couple_id = _require_couple(user)
     watch = session.get(TicketWatch, watch_id)
     if not watch or watch.couple_id != couple_id:
-        raise HTTPException(status_code=404, detail="Watch no encontrado")
+        raise HTTPException(status_code=404, detail="监控未找到")
     _check_watch(watch, session, user_id=user.id)
     return watch
 
@@ -147,7 +147,7 @@ def delete_watch(
     couple_id = _require_couple(user)
     watch = session.get(TicketWatch, watch_id)
     if not watch or watch.couple_id != couple_id:
-        raise HTTPException(status_code=404, detail="Watch no encontrado")
+        raise HTTPException(status_code=404, detail="监控未找到")
     session.delete(watch)
     session.commit()
     return {"ok": True}
@@ -163,7 +163,7 @@ def toggle_active(
     couple_id = _require_couple(user)
     watch = session.get(TicketWatch, watch_id)
     if not watch or watch.couple_id != couple_id:
-        raise HTTPException(status_code=404, detail="Watch no encontrado")
+        raise HTTPException(status_code=404, detail="监控未找到")
     watch.active = active
     session.add(watch)
     session.commit()

@@ -14,7 +14,7 @@ router = APIRouter(prefix="/summary", tags=["summary"])
 
 def require_couple(user: User):
     if not user.couple_id:
-        raise HTTPException(status_code=400, detail="Debes pertenecer a una pareja")
+        raise HTTPException(status_code=400, detail="你需要属于一个情侣")
     return user.couple_id
 
 

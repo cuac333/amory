@@ -2,8 +2,8 @@ import { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { Calendar, ChevronLeft, ChevronRight } from "lucide-react";
 
-const MONTH_NAMES_ES = ["Enero", "Febrero", "Marzo", "Abril", "Mayo", "Junio", "Julio", "Agosto", "Septiembre", "Octubre", "Noviembre", "Diciembre"];
-const DAY_NAMES_ES = ["Lu", "Ma", "Mi", "Ju", "Vi", "Sá", "Do"];
+const MONTH_NAMES_ES = ["一月", "二月", "三月", "四月", "五月", "六月", "七月", "八月", "九月", "十月", "十一月", "十二月"];
+const DAY_NAMES_ES = ["一", "二", "三", "四", "五", "六", "日"];
 
 interface Props {
   value: string;
@@ -11,7 +11,7 @@ interface Props {
   placeholder?: string;
 }
 
-export default function DatePicker({ value, onChange, placeholder = "Selecciona una fecha" }: Props) {
+export default function DatePicker({ value, onChange, placeholder = "选择日期" }: Props) {
   const [open, setOpen] = useState(false);
   const today = new Date();
   const selected = value ? new Date(value + "T12:00:00") : null;
@@ -42,7 +42,7 @@ export default function DatePicker({ value, onChange, placeholder = "Selecciona 
   const isSelected = (day: number) => selected && selected.getFullYear() === viewYear && selected.getMonth() === viewMonth && selected.getDate() === day;
 
   const displayText = selected
-    ? `${selected.getDate()} de ${MONTH_NAMES_ES[selected.getMonth()]} ${selected.getFullYear()}`
+    ? `${selected.getFullYear()}年${MONTH_NAMES_ES[selected.getMonth()]}${selected.getDate()}日`
     : "";
 
   return (
@@ -115,21 +115,21 @@ export default function DatePicker({ value, onChange, placeholder = "Selecciona 
                 onClick={() => { const t = today; setViewMonth(t.getMonth()); setViewYear(t.getFullYear()); selectDay(t.getDate()); }}
                 className="flex-1 py-1.5 text-[11px] font-medium text-burnt-400 bg-burnt-50/50 rounded-lg hover:bg-burnt-50 transition-colors"
               >
-                Hoy
+                今天
               </button>
               <button
                 type="button"
                 onClick={() => { const t = new Date(today.getTime() + 7 * 86400000); setViewMonth(t.getMonth()); setViewYear(t.getFullYear()); selectDay(t.getDate()); }}
                 className="flex-1 py-1.5 text-[11px] font-medium text-charcoal-400 bg-warm-50 rounded-lg hover:bg-warm-100 transition-colors"
               >
-                En 1 semana
+                一周后
               </button>
               <button
                 type="button"
                 onClick={() => { const t = new Date(today.getFullYear(), today.getMonth() + 1, today.getDate()); setViewMonth(t.getMonth()); setViewYear(t.getFullYear()); selectDay(t.getDate()); }}
                 className="flex-1 py-1.5 text-[11px] font-medium text-charcoal-400 bg-warm-50 rounded-lg hover:bg-warm-100 transition-colors"
               >
-                En 1 mes
+                一月后
               </button>
             </div>
           </motion.div>

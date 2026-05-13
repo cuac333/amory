@@ -344,7 +344,7 @@ function QuestionCard({
       <div className="flex items-center justify-between px-5 pt-4">
         {question.is_preset ? (
           <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-[10px] font-medium bg-purple-50 dark:bg-purple-900/20 text-purple-400">
-            <Sparkles size={10} /> Preset
+            <Sparkles size={10} /> 预设
           </span>
         ) : (
           <span />

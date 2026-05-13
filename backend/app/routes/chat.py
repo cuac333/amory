@@ -33,7 +33,7 @@ def _msg_to_response(msg: ChatMessage, session: Session, sender_name: str = "") 
     if msg.reply_to_id:
         replied = session.get(ChatMessage, msg.reply_to_id)
         if replied:
-            reply_preview = (replied.text or "📷 Foto")[:60]
+            reply_preview = (replied.text or "📷 图片")[:60]
 
     return ChatMessageResponse(
         id=msg.id,
@@ -59,7 +59,7 @@ def get_messages(
     session: Session = Depends(get_session),
 ):
     if not user.couple_id:
-        raise HTTPException(status_code=404, detail="No perteneces a una pareja")
+        raise HTTPException(status_code=404, detail="你不属于任何情侣")
 
     query = select(ChatMessage).where(ChatMessage.couple_id == user.couple_id)
 
@@ -88,9 +88,9 @@ def send_message(
     session: Session = Depends(get_session),
 ):
     if not user.couple_id:
-        raise HTTPException(status_code=404, detail="No perteneces a una pareja")
+        raise HTTPException(status_code=404, detail="你不属于任何情侣")
     if not data.text or not data.text.strip():
-        raise HTTPException(status_code=400, detail="El mensaje no puede estar vacío")
+        raise HTTPException(status_code=400, detail="消息不能为空")
 
     msg = ChatMessage(
         couple_id=user.couple_id,
@@ -103,11 +103,11 @@ def send_message(
     session.refresh(msg)
     text = data.text.strip() if data.text else ""
     if text.startswith("[custom-sticker:"):
-        preview = "Te envio un sticker"
+        preview = "给你发了一个贴纸"
     elif text.startswith("[sticker:"):
-        preview = "Te envio un sticker"
+        preview = "给你发了一个贴纸"
     else:
-        preview = text[:80] or "Nuevo mensaje"
+        preview = text[:80] or "新消息"
     send_push_to_partner(user, user.name, preview, "/chat", session, tag="amory-chat")
     try:
         award_xp(user.couple_id, user.id, "message_sent", 2, session)
@@ -124,7 +124,7 @@ def send_image(
     session: Session = Depends(get_session),
 ):
     if not user.couple_id:
-        raise HTTPException(status_code=404, detail="No perteneces a una pareja")
+        raise HTTPException(status_code=404, detail="你不属于任何情侣")
 
     UPLOADS_IMAGES_DIR.mkdir(parents=True, exist_ok=True)
     ext = file.filename.split(".")[-1] if file.filename else "jpg"
@@ -142,7 +142,7 @@ def send_image(
     session.add(msg)
     session.commit()
     session.refresh(msg)
-    send_push_to_partner(user, user.name, "Te envio una foto", "/chat", session, tag="amory-chat")
+    send_push_to_partner(user, user.name, "给你发了一张照片", "/chat", session, tag="amory-chat")
     return _msg_to_response(msg, session, user.name)
 
 
@@ -164,11 +164,11 @@ def toggle_reaction(
     session: Session = Depends(get_session),
 ):
     if not user.couple_id:
-        raise HTTPException(status_code=404, detail="No perteneces a una pareja")
+        raise HTTPException(status_code=404, detail="你不属于任何情侣")
 
     msg = session.get(ChatMessage, message_id)
     if not msg or msg.couple_id != user.couple_id:
-        raise HTTPException(status_code=404, detail="Mensaje no encontrado")
+        raise HTTPException(status_code=404, detail="消息未找到")
 
     reactions = {}
     if msg.reactions:
@@ -202,11 +202,11 @@ def toggle_pin(
     session: Session = Depends(get_session),
 ):
     if not user.couple_id:
-        raise HTTPException(status_code=404, detail="No perteneces a una pareja")
+        raise HTTPException(status_code=404, detail="你不属于任何情侣")
 
     msg = session.get(ChatMessage, message_id)
     if not msg or msg.couple_id != user.couple_id:
-        raise HTTPException(status_code=404, detail="Mensaje no encontrado")
+        raise HTTPException(status_code=404, detail="消息未找到")
 
     msg.pinned = not msg.pinned
     session.add(msg)
@@ -222,13 +222,13 @@ def delete_message(
     session: Session = Depends(get_session),
 ):
     if not user.couple_id:
-        raise HTTPException(status_code=404, detail="No perteneces a una pareja")
+        raise HTTPException(status_code=404, detail="你不属于任何情侣")
 
     msg = session.get(ChatMessage, message_id)
     if not msg or msg.couple_id != user.couple_id:
-        raise HTTPException(status_code=404, detail="Mensaje no encontrado")
+        raise HTTPException(status_code=404, detail="消息未找到")
     if msg.sender_id != user.id:
-        raise HTTPException(status_code=403, detail="Solo puedes borrar tus propios mensajes")
+        raise HTTPException(status_code=403, detail="你只能删除自己的消息")
 
     session.delete(msg)
     session.commit()
@@ -243,7 +243,7 @@ def get_custom_stickers(
     session: Session = Depends(get_session),
 ):
     if not user.couple_id:
-        raise HTTPException(status_code=404, detail="No perteneces a una pareja")
+        raise HTTPException(status_code=404, detail="你不属于任何情侣")
     stickers = session.exec(
         select(CustomSticker)
         .where(CustomSticker.couple_id == user.couple_id)
@@ -264,7 +264,7 @@ async def upload_custom_sticker(
     session: Session = Depends(get_session),
 ):
     if not user.couple_id:
-        raise HTTPException(status_code=404, detail="No perteneces a una pareja")
+        raise HTTPException(status_code=404, detail="你不属于任何情侣")
 
     import uuid
     stickers_dir = UPLOADS_IMAGES_DIR.parent / "stickers"
@@ -296,10 +296,10 @@ def delete_custom_sticker(
     session: Session = Depends(get_session),
 ):
     if not user.couple_id:
-        raise HTTPException(status_code=404, detail="No perteneces a una pareja")
+        raise HTTPException(status_code=404, detail="你不属于任何情侣")
     sticker = session.get(CustomSticker, sticker_id)
     if not sticker or sticker.couple_id != user.couple_id:
-        raise HTTPException(status_code=404, detail="Sticker no encontrado")
+        raise HTTPException(status_code=404, detail="贴纸未找到")
     session.delete(sticker)
     session.commit()
     return {"ok": True}

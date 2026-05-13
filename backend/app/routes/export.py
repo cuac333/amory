@@ -51,7 +51,7 @@ WHITE = (255, 255, 255)
 
 def require_couple(user: User) -> int:
     if not user.couple_id:
-        raise HTTPException(status_code=400, detail="Debes pertenecer a una pareja")
+        raise HTTPException(status_code=400, detail="你需要属于一个情侣")
     return user.couple_id
 
 
@@ -261,7 +261,7 @@ def _build_pdf(user: User, session: Session) -> bytes:
     couple_id = user.couple_id
     couple = session.get(Couple, couple_id)
     if not couple:
-        raise HTTPException(status_code=404, detail="Pareja no encontrada")
+        raise HTTPException(status_code=404, detail="情侣未找到")
 
     users = session.exec(select(User).where(User.couple_id == couple_id)).all()
     user_map = {u.id: u.name for u in users}
@@ -353,7 +353,7 @@ def _build_pdf(user: User, session: Session) -> bytes:
     ).all()
 
     if pages:
-        pdf.section_page("Nuestro Libro", "Las paginas de nuestra historia juntos")
+        pdf.section_page("我们的回忆录", "我们一起书写的故事篇章")
         for page in pages:
             pdf._check_space(50)
             if page.title:
@@ -368,7 +368,7 @@ def _build_pdf(user: User, session: Session) -> bytes:
                 if fp.caption:
                     pdf.small_text(fp.caption)
                 if fp.place_name:
-                    pdf.small_text(f"Lugar: {fp.place_name}")
+                    pdf.small_text(f"地点: {fp.place_name}")
             if page.text:
                 pdf.body_text(page.text)
             # Page comments
@@ -391,7 +391,7 @@ def _build_pdf(user: User, session: Session) -> bytes:
     ).all()
 
     if timeline:
-        pdf.section_page("Linea del Tiempo", "Los momentos que nos han definido")
+        pdf.section_page("时间线", "定义我们的那些时刻")
         for ev in timeline:
             pdf._check_space(40)
             date_label = _fmt_date(ev.event_date)
@@ -415,7 +415,7 @@ def _build_pdf(user: User, session: Session) -> bytes:
     ).all()
 
     if diary:
-        pdf.section_page("Diario de Pareja", f"{len(diary)} momentos escritos desde el corazon")
+        pdf.section_page("情侣日记", f"发自内心的{len(diary)}篇日记")
         for entry in diary:
             pdf._check_space(35)
             author_name = user_map.get(entry.user_id, "?")
@@ -448,19 +448,19 @@ def _build_pdf(user: User, session: Session) -> bytes:
     if outings:
         completed = [o for o in outings if o.status in ("completed", "documented")]
         pending = [o for o in outings if o.status not in ("completed", "documented")]
-        pdf.section_page("Salidas y Aventuras", f"{len(completed)} completadas | {len(pending)} por vivir")
+        pdf.section_page("约会与冒险", f"已完成{len(completed)}次 | 待体验{len(pending)}次")
 
         if completed:
-            pdf.section_title("Aventuras vividas")
+            pdf.section_title("已体验的冒险")
             for o in completed:
                 pdf._check_space(40)
                 pdf.sub_title(o.title)
                 if o.place:
-                    pdf.label_value("Lugar", o.place)
+                    pdf.label_value("地点", o.place)
                 if o.description:
                     pdf.body_text(o.description)
                 if o.completed_at:
-                    pdf.small_text(f"Completada el {o.completed_at.strftime('%d/%m/%Y')}")
+                    pdf.small_text(f"完成于 {o.completed_at.strftime('%Y/%m/%d')}")
                 # Documents/photos
                 docs = session.exec(
                     select(OutingDocument).where(OutingDocument.outing_id == o.id)
@@ -474,14 +474,14 @@ def _build_pdf(user: User, session: Session) -> bytes:
                 pdf.decorative_separator()
 
         if pending:
-            pdf.section_title("Proximas aventuras")
+            pdf.section_title("即将到来的冒险")
             for o in pending:
                 pdf._check_space(20)
                 pdf.sub_title(o.title)
                 if o.place:
-                    pdf.label_value("Lugar", o.place)
+                    pdf.label_value("地点", o.place)
                 if o.proposed_date:
-                    pdf.label_value("Fecha propuesta", o.proposed_date.strftime("%d/%m/%Y"))
+                    pdf.label_value("拟定日期", o.proposed_date.strftime("%Y/%m/%d"))
                 if o.description:
                     pdf.body_text(o.description)
                 pdf.ln(2)
@@ -496,11 +496,11 @@ def _build_pdf(user: User, session: Session) -> bytes:
 
     if monthly:
         done = [m for m in monthly if m.status == "completed"]
-        pdf.section_page("Actividades Mensuales", f"{len(done)} de {len(monthly)} completadas")
+        pdf.section_page("月度活动", f"已完成{len(done)}/{len(monthly)}")
         for act in monthly:
             pdf._check_space(35)
             month_name = MONTHS_ES[act.month] if 1 <= act.month <= 12 else str(act.month)
-            status_icon = "[completada]" if act.status == "completed" else "[pendiente]"
+            status_icon = "[已完成]" if act.status == "completed" else "[进行中]"
             pdf.set_font("Helvetica", "", 8)
             pdf.set_text_color(*BURNT if act.status == "completed" else TEXT_MUTED)
             pdf.cell(0, 5, f"{month_name} {act.year}  {status_icon}", new_x="LMARGIN", new_y="NEXT")
@@ -531,21 +531,21 @@ def _build_pdf(user: User, session: Session) -> bytes:
     if wishlist:
         done_w = [w for w in wishlist if w.completed]
         pending_w = [w for w in wishlist if not w.completed]
-        pdf.section_page("Lista de Deseos", f"{len(done_w)} cumplidos | {len(pending_w)} por cumplir")
+        pdf.section_page("心愿清单", f"已实现{len(done_w)}个 | 待实现{len(pending_w)}个")
 
         cat_names = {
-            "place": "Lugares", "restaurant": "Restaurantes", "movie": "Peliculas",
-            "gift": "Regalos", "experience": "Experiencias",
+            "place": "地点", "restaurant": "餐厅", "movie": "电影",
+            "gift": "礼物", "experience": "体验",
         }
 
         if done_w:
-            pdf.section_title("Deseos cumplidos")
+            pdf.section_title("已实现的心愿")
             for w in done_w:
                 pdf._check_space(20)
                 cat = cat_names.get(w.category, w.category)
                 stars = ("*" * w.rating) if w.rating else ""
                 pdf.sub_title(f"{w.title}  {stars}")
-                pdf.small_text(f"Categoria: {cat}")
+                pdf.small_text(f"分类: {cat}")
                 if w.review:
                     pdf.body_text(f'"{w.review}"')
                 if w.image_url:
@@ -553,7 +553,7 @@ def _build_pdf(user: User, session: Session) -> bytes:
                 pdf.ln(1)
 
         if pending_w:
-            pdf.section_title("Deseos pendientes")
+            pdf.section_title("待实现的心愿")
             for w in pending_w:
                 pdf._check_space(15)
                 cat = cat_names.get(w.category, w.category)
@@ -574,7 +574,7 @@ def _build_pdf(user: User, session: Session) -> bytes:
     if bucket:
         done_b = [b for b in bucket if b.completed]
         pending_b = [b for b in bucket if not b.completed]
-        pdf.section_page("Bucket List", f"{len(done_b)} logrados de {len(bucket)}")
+        pdf.section_page("人生清单", f"已完成{len(done_b)}/{len(bucket)}")
 
         for b in bucket:
             pdf._check_space(15)
@@ -595,7 +595,7 @@ def _build_pdf(user: User, session: Session) -> bytes:
     ).all()
 
     if songs:
-        pdf.section_page("Nuestra Playlist", f"{len(songs)} canciones que nos representan")
+        pdf.section_page("我们的歌单", f"{len(songs)}首代表我们的歌")
         for i, song in enumerate(songs, 1):
             pdf._check_space(15)
             pdf.set_font("Helvetica", "B", 10)
@@ -621,15 +621,15 @@ def _build_pdf(user: User, session: Session) -> bytes:
     if dreams:
         done_d = [d for d in dreams if d.completed]
         pending_d = [d for d in dreams if not d.completed]
-        pdf.section_page("Tablero de Suenos", f"{len(done_d)} cumplidos | {len(pending_d)} por cumplir")
+        pdf.section_page("梦想板", f"已实现{len(done_d)}个 | 待实现{len(pending_d)}个")
 
         cat_dream = {
-            "travel": "Viajes", "home": "Hogar", "experiences": "Experiencias",
-            "personal": "Personal", "general": "General",
+            "travel": "旅行", "home": "家庭", "experiences": "体验",
+            "personal": "个人", "general": "综合",
         }
 
         if done_d:
-            pdf.section_title("Suenos cumplidos")
+            pdf.section_title("已实现的梦想")
             for d in done_d:
                 pdf._check_space(15)
                 cat = cat_dream.get(d.category, d.category)
@@ -640,7 +640,7 @@ def _build_pdf(user: User, session: Session) -> bytes:
                     pdf.small_text(f"     {d.description[:150]}")
 
         if pending_d:
-            pdf.section_title("Suenos pendientes")
+            pdf.section_title("待实现的梦想")
             for d in pending_d:
                 pdf._check_space(15)
                 cat = cat_dream.get(d.category, d.category)
@@ -659,11 +659,11 @@ def _build_pdf(user: User, session: Session) -> bytes:
     ).all()
 
     if recipes:
-        pdf.section_page("Nuestras Recetas", f"{len(recipes)} recetas guardadas")
+        pdf.section_page("我们的菜谱", f"已保存{len(recipes)}道菜")
         for r in recipes:
             pdf._check_space(40)
             stars = ("*" * r.rating) if r.rating else ""
-            cooked_label = "  [Cocinada]" if r.cooked else ""
+            cooked_label = "  [已做]" if r.cooked else ""
             pdf.sub_title(f"{r.title}  {stars}{cooked_label}")
             if r.description:
                 pdf.body_text(r.description)
@@ -671,9 +671,9 @@ def _build_pdf(user: User, session: Session) -> bytes:
                 try:
                     ingr = json.loads(r.ingredients) if isinstance(r.ingredients, str) else r.ingredients
                     if isinstance(ingr, list):
-                        pdf.label_value("Ingredientes", ", ".join(ingr))
+                        pdf.label_value("食材", ", ".join(ingr))
                 except Exception:
-                    pdf.label_value("Ingredientes", str(r.ingredients)[:200])
+                    pdf.label_value("食材", str(r.ingredients)[:200])
             if r.instructions:
                 pdf.body_text(r.instructions[:500])
             if r.photo_url:
@@ -690,15 +690,15 @@ def _build_pdf(user: User, session: Session) -> bytes:
     ).all()
 
     if pins:
-        pdf.section_page("Mapa de Recuerdos", f"{len(pins)} lugares especiales marcados")
+        pdf.section_page("回忆地图", f"标记了{len(pins)}个特别的地方")
         for pin in pins:
             pdf._check_space(35)
             pdf.sub_title(pin.title)
             if pin.description:
                 pdf.body_text(pin.description)
             if pin.visited_at:
-                pdf.small_text(f"Visitado el {pin.visited_at.strftime('%d/%m/%Y')}")
-            pdf.small_text(f"Coordenadas: {pin.latitude:.4f}, {pin.longitude:.4f}")
+                pdf.small_text(f"到访于 {pin.visited_at.strftime('%Y/%m/%d')}")
+            pdf.small_text(f"坐标: {pin.latitude:.4f}, {pin.longitude:.4f}")
             if pin.photo_url:
                 pdf.add_image_safe(pin.photo_url, max_w=70)
             pdf.ln(2)
@@ -713,7 +713,7 @@ def _build_pdf(user: User, session: Session) -> bytes:
     ).all()
 
     if reasons:
-        pdf.section_page("Razones para Amarte", f"{len(reasons)} razones escritas")
+        pdf.section_page("爱你的理由", f"写下了{len(reasons)}个理由")
         for i, r in enumerate(reasons, 1):
             pdf._check_space(15)
             author = user_map.get(r.author_id, "?")
@@ -733,26 +733,26 @@ def _build_pdf(user: User, session: Session) -> bytes:
 
     if letters:
         cat_letter = {
-            "happy": "estas feliz", "sad": "estas triste", "stressed": "estas estresado/a",
-            "angry": "estas enojado/a", "missing": "me extranas", "grateful": "estas agradecido/a",
-            "bored": "estas aburrido/a", "scared": "tienes miedo", "lonely": "te sientes solo/a",
-            "proud": "estas orgulloso/a",
+            "happy": "开心的时候", "sad": "难过的时候", "stressed": "压力大的时候",
+            "angry": "生气的时候", "missing": "想我的时候", "grateful": "感恩的时候",
+            "bored": "无聊的时候", "scared": "害怕的时候", "lonely": "孤单的时候",
+            "proud": "骄傲的时候",
         }
         opened = [l for l in letters if l.opened_at]
-        pdf.section_page("Cartas: Abre cuando...", f"{len(opened)} abiertas de {len(letters)}")
+        pdf.section_page("信件：当……的时候打开", f"已打开{len(opened)}/{len(letters)}")
         for letter in letters:
             pdf._check_space(30)
             cat = cat_letter.get(letter.category, letter.category)
-            status = "[Abierta]" if letter.opened_at else "[Sin abrir]"
+            status = "[已打开]" if letter.opened_at else "[未打开]"
             author = user_map.get(letter.author_id, "?")
-            pdf.sub_title(f"Abre cuando {cat}  {status}")
-            pdf.small_text(f"De: {author}")
+            pdf.sub_title(f"当{cat}的时候打开  {status}")
+            pdf.small_text(f"来自: {author}")
             if letter.opened_at:
                 pdf.body_text(letter.content[:500])
             else:
                 pdf.set_font("Helvetica", "I", 9)
                 pdf.set_text_color(*TEXT_MUTED)
-                pdf.cell(0, 5, "Contenido oculto hasta que se abra", new_x="LMARGIN", new_y="NEXT")
+                pdf.cell(0, 5, "打开后才能看到内容", new_x="LMARGIN", new_y="NEXT")
                 pdf.ln(2)
             pdf.ln(2)
             pdf.decorative_separator()
@@ -766,13 +766,13 @@ def _build_pdf(user: User, session: Session) -> bytes:
     ).all()
 
     if capsules:
-        pdf.section_page("Capsulas del Tiempo", f"{len(capsules)} capsulas creadas")
+        pdf.section_page("时间胶囊", f"创建了{len(capsules)}个胶囊")
         for cap in capsules:
             pdf._check_space(30)
             author = user_map.get(cap.author_id, "?")
-            status = "[Abierta]" if cap.opened else f"[Se abre el {cap.opens_at.strftime('%d/%m/%Y')}]"
+            status = "[已打开]" if cap.opened else f"[将于 {cap.opens_at.strftime('%Y/%m/%d')} 打开]"
             pdf.sub_title(f"{cap.title}  {status}")
-            pdf.small_text(f"Creada por {author} el {cap.created_at.strftime('%d/%m/%Y')}")
+            pdf.small_text(f"由 {author} 于 {cap.created_at.strftime('%Y/%m/%d')} 创建")
             if cap.opened and cap.message:
                 pdf.body_text(cap.message[:500])
             if cap.opened and cap.photo_url:
@@ -797,7 +797,7 @@ def _build_pdf(user: User, session: Session) -> bytes:
             if len(answers) >= 2:
                 answered_count += 1
 
-        pdf.section_page("Preguntas Diarias", f"{answered_count} respondidas por ambos de {len(questions)}")
+        pdf.section_page("每日问题", f"双方都回答了{answered_count}/{len(questions)}")
         for q in questions:
             answers = session.exec(
                 select(DailyAnswer).where(DailyAnswer.question_id == q.id)
@@ -831,12 +831,12 @@ def _build_pdf(user: User, session: Session) -> bytes:
     ).all()
 
     if events:
-        pdf.section_page("Calendario de Pareja", f"{len(events)} eventos especiales")
+        pdf.section_page("情侣日历", f"{len(events)}个特别事件")
         for ev in events:
             pdf._check_space(15)
             date_label = _fmt_date(ev.event_date)
-            time_str = f" a las {ev.event_time}" if ev.event_time else ""
-            recurring_str = f"  (se repite {ev.recurring})" if ev.recurring else ""
+            time_str = f" {ev.event_time}" if ev.event_time else ""
+            recurring_str = f"  (重复: {ev.recurring})" if ev.recurring else ""
             pdf.set_font("Helvetica", "", 8)
             pdf.set_text_color(*BURNT)
             pdf.cell(0, 5, f"{date_label}{time_str}{recurring_str}", new_x="LMARGIN", new_y="NEXT")
@@ -858,26 +858,26 @@ def _build_pdf(user: User, session: Session) -> bytes:
     ).all()
 
     if vouchers or scratches:
-        pdf.section_page("Vales y Raspaditas", "Sorpresas especiales entre nosotros")
+        pdf.section_page("兑换券与刮刮卡", "我们之间的特别惊喜")
 
         if vouchers:
-            pdf.section_title("Vales de Amor")
+            pdf.section_title("爱情兑换券")
             for v in vouchers:
                 pdf._check_space(20)
-                redeemed = "[Canjeado]" if v.redeemed_at else "[Disponible]"
+                redeemed = "[已兑换]" if v.redeemed_at else "[可用]"
                 pdf.sub_title(f"{v.title}  {redeemed}")
                 if v.description:
                     pdf.body_text(v.description)
                 pdf.ln(1)
 
         if scratches:
-            pdf.section_title("Raspaditas")
+            pdf.section_title("刮刮卡")
             for s in scratches:
                 pdf._check_space(20)
-                scratched = "[Raspada]" if s.scratched_at else "[Sin raspar]"
+                scratched = "[已刮开]" if s.scratched_at else "[未刮开]"
                 pdf.sub_title(f"{s.title}  {scratched}")
                 if s.scratched_at:
-                    pdf.body_text(f'Mensaje oculto: "{s.hidden_message}"')
+                    pdf.body_text(f'隐藏信息: "{s.hidden_message}"')
                 pdf.ln(1)
 
     # ═══════════════════════════════════════════
@@ -890,10 +890,10 @@ def _build_pdf(user: User, session: Session) -> bytes:
 
     if challenges:
         completed_ch = [c for c in challenges if c.status == "completed"]
-        pdf.section_page("Retos Semanales", f"{len(completed_ch)} completados de {len(challenges)}")
+        pdf.section_page("每周挑战", f"已完成{len(completed_ch)}/{len(challenges)}")
         for ch in challenges:
             pdf._check_space(15)
-            status = "[completado]" if ch.status == "completed" else "[pendiente]"
+            status = "[已完成]" if ch.status == "completed" else "[进行中]"
             pdf.set_font("Helvetica", "B" if ch.status == "completed" else "", 9.5)
             pdf.set_text_color(*ACCENT_GREEN if ch.status == "completed" else TEXT_BODY)
             pdf.cell(0, 5.5, f"{status}  {ch.title}", new_x="LMARGIN", new_y="NEXT")
@@ -910,7 +910,7 @@ def _build_pdf(user: User, session: Session) -> bytes:
     ).all()
 
     if guestbook:
-        pdf.section_page("Libro de Visitas", f"{len(guestbook)} mensajes de personas especiales")
+        pdf.section_page("留言簿", f"{len(guestbook)}条来自特别的人的留言")
         for gb in guestbook:
             pdf._check_space(25)
             pdf.set_font("Helvetica", "B", 10)
@@ -932,7 +932,7 @@ def _build_pdf(user: User, session: Session) -> bytes:
     ).all()
 
     if pinned_msgs:
-        pdf.section_page("Mensajes Fijados", f"{len(pinned_msgs)} mensajes que guardamos")
+        pdf.section_page("置顶消息", f"保存了{len(pinned_msgs)}条消息")
         for msg in pinned_msgs:
             pdf._check_space(15)
             sender = user_map.get(msg.sender_id, "?")
@@ -961,7 +961,7 @@ def _build_pdf(user: User, session: Session) -> bytes:
     ).first()
 
     # Always show stats page
-    pdf.section_page("Logros y Estadisticas", "Nuestro progreso como pareja")
+    pdf.section_page("成就与统计", "我们作为情侣的成长")
 
     # Stat counts
     diary_count = session.exec(
@@ -976,20 +976,20 @@ def _build_pdf(user: User, session: Session) -> bytes:
     if xp_record:
         pdf.set_font("Helvetica", "B", 14)
         pdf.set_text_color(*BURNT)
-        pdf.cell(0, 8, f"Nivel {xp_record.level}  |  {xp_record.total_xp} XP", align="C", new_x="LMARGIN", new_y="NEXT")
+        pdf.cell(0, 8, f"等级 {xp_record.level}  |  {xp_record.total_xp} XP", align="C", new_x="LMARGIN", new_y="NEXT")
         pdf.ln(8)
 
     # Stats grid
-    pdf.section_title("Nuestros numeros")
+    pdf.section_title("我们的数据")
     stats = [
-        ("Dias juntos", str((datetime.utcnow() - couple.anniversary_date).days) if couple.anniversary_date else "?"),
-        ("Entradas de diario", str(diary_count)),
-        ("Mensajes de chat", str(chat_count)),
-        ("Canciones", str(len(songs) if songs else 0)),
-        ("Aventuras vividas", str(outing_count)),
-        ("Lugares en el mapa", str(len(pins) if pins else 0)),
-        ("Suenos guardados", str(len(dreams) if dreams else 0)),
-        ("Momentos en timeline", str(len(timeline) if timeline else 0)),
+        ("在一起的天数", str((datetime.utcnow() - couple.anniversary_date).days) if couple.anniversary_date else "?"),
+        ("日记篇数", str(diary_count)),
+        ("聊天消息数", str(chat_count)),
+        ("歌曲数", str(len(songs) if songs else 0)),
+        ("已体验的冒险", str(outing_count)),
+        ("地图上的地点", str(len(pins) if pins else 0)),
+        ("保存的梦想", str(len(dreams) if dreams else 0)),
+        ("时间线上的时刻", str(len(timeline) if timeline else 0)),
     ]
 
     for label, value in stats:
@@ -997,14 +997,14 @@ def _build_pdf(user: User, session: Session) -> bytes:
 
     if streak:
         pdf.ln(4)
-        pdf.label_value("Racha actual", f"{streak.current_streak} meses")
-        pdf.label_value("Mejor racha", f"{streak.best_streak} meses")
+        pdf.label_value("当前连续记录", f"{streak.current_streak}个月")
+        pdf.label_value("最佳记录", f"{streak.best_streak}个月")
 
     # Achievements
     unlocked = [a for a in achievements if a.unlocked_at]
     if unlocked:
         pdf.ln(6)
-        pdf.section_title(f"Logros desbloqueados ({len(unlocked)})")
+        pdf.section_title(f"已解锁的成就 ({len(unlocked)})")
         for a in unlocked:
             pdf._check_space(15)
             pdf.set_font("Helvetica", "B", 9.5)
@@ -1017,7 +1017,7 @@ def _build_pdf(user: User, session: Session) -> bytes:
     locked = [a for a in achievements if not a.unlocked_at]
     if locked:
         pdf.ln(4)
-        pdf.section_title(f"Logros por desbloquear ({len(locked)})")
+        pdf.section_title(f"待解锁的成就 ({len(locked)})")
         for a in locked:
             pdf._check_space(12)
             pdf.set_font("Helvetica", "", 9)
@@ -1040,7 +1040,7 @@ def _build_pdf(user: User, session: Session) -> bytes:
 
     pdf.set_font("Helvetica", "B", 28)
     pdf.set_text_color(*BURNT)
-    pdf.cell(0, 14, "Hecho con amor", align="C", new_x="LMARGIN", new_y="NEXT")
+    pdf.cell(0, 14, "用爱制作", align="C", new_x="LMARGIN", new_y="NEXT")
     pdf.ln(6)
 
     pdf.set_font("Helvetica", "I", 14)
@@ -1051,7 +1051,7 @@ def _build_pdf(user: User, session: Session) -> bytes:
     if anniversary_str:
         pdf.set_font("Helvetica", "", 10)
         pdf.set_text_color(*WARM_LIGHT)
-        pdf.cell(0, 6, f"Desde {anniversary_str}", align="C", new_x="LMARGIN", new_y="NEXT")
+        pdf.cell(0, 6, f"自 {anniversary_str}", align="C", new_x="LMARGIN", new_y="NEXT")
 
     pdf.ln(20)
 

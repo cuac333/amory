@@ -21,7 +21,7 @@ router = APIRouter(tags=["content"])
 
 def require_couple(user: User) -> int:
     if not user.couple_id:
-        raise HTTPException(status_code=400, detail="You must be part of a couple to use this feature.")
+        raise HTTPException(status_code=400, detail="你需要属于一个情侣才能使用此功能。")
     return user.couple_id
 
 
@@ -77,9 +77,9 @@ def delete_song(
     couple_id = require_couple(user)
     song = session.get(SharedSong, song_id)
     if not song or song.couple_id != couple_id:
-        raise HTTPException(status_code=404, detail="Song not found.")
+        raise HTTPException(status_code=404, detail="歌曲未找到。")
     if song.added_by != user.id:
-        raise HTTPException(status_code=403, detail="You can only delete songs you added.")
+        raise HTTPException(status_code=403, detail="你只能删除自己添加的歌曲。")
     session.delete(song)
     session.commit()
 
@@ -162,7 +162,7 @@ def update_recipe(
     couple_id = require_couple(user)
     recipe = session.get(Recipe, recipe_id)
     if not recipe or recipe.couple_id != couple_id:
-        raise HTTPException(status_code=404, detail="Recipe not found.")
+        raise HTTPException(status_code=404, detail="食谱未找到。")
     if data.title is not None:
         recipe.title = data.title
     if data.description is not None:
@@ -191,7 +191,7 @@ def upload_recipe_photo(
     couple_id = require_couple(user)
     recipe = session.get(Recipe, recipe_id)
     if not recipe or recipe.couple_id != couple_id:
-        raise HTTPException(status_code=404, detail="Recipe not found.")
+        raise HTTPException(status_code=404, detail="食谱未找到。")
     filename = f"recipe_{recipe_id}_{datetime.utcnow().timestamp()}.{file.filename.split('.')[-1]}"
     path = UPLOADS_IMAGES_DIR / filename
     with open(path, "wb") as f:
@@ -212,9 +212,9 @@ def delete_recipe(
     couple_id = require_couple(user)
     recipe = session.get(Recipe, recipe_id)
     if not recipe or recipe.couple_id != couple_id:
-        raise HTTPException(status_code=404, detail="Recipe not found.")
+        raise HTTPException(status_code=404, detail="食谱未找到。")
     if recipe.added_by != user.id:
-        raise HTTPException(status_code=403, detail="You can only delete recipes you added.")
+        raise HTTPException(status_code=403, detail="你只能删除自己添加的食谱。")
     session.delete(recipe)
     session.commit()
 
@@ -268,7 +268,7 @@ def upload_timeline_photo(
     couple_id = require_couple(user)
     event = session.get(TimelineEvent, event_id)
     if not event or event.couple_id != couple_id:
-        raise HTTPException(status_code=404, detail="Timeline event not found.")
+        raise HTTPException(status_code=404, detail="时间线事件未找到。")
     filename = f"timeline_{event_id}_{datetime.utcnow().timestamp()}.{file.filename.split('.')[-1]}"
     path = UPLOADS_IMAGES_DIR / filename
     with open(path, "wb") as f:
@@ -289,9 +289,9 @@ def delete_timeline_event(
     couple_id = require_couple(user)
     event = session.get(TimelineEvent, event_id)
     if not event or event.couple_id != couple_id:
-        raise HTTPException(status_code=404, detail="Timeline event not found.")
+        raise HTTPException(status_code=404, detail="时间线事件未找到。")
     if event.added_by != user.id:
-        raise HTTPException(status_code=403, detail="You can only delete events you added.")
+        raise HTTPException(status_code=403, detail="你只能删除自己添加的事件。")
     session.delete(event)
     session.commit()
 
@@ -347,7 +347,7 @@ def toggle_dream_completed(
     couple_id = require_couple(user)
     dream = session.get(DreamItem, dream_id)
     if not dream or dream.couple_id != couple_id:
-        raise HTTPException(status_code=404, detail="Dream not found.")
+        raise HTTPException(status_code=404, detail="梦想未找到。")
     dream.completed = not dream.completed
     dream.completed_at = datetime.utcnow() if dream.completed else None
     session.add(dream)
@@ -366,7 +366,7 @@ def upload_dream_image(
     couple_id = require_couple(user)
     dream = session.get(DreamItem, dream_id)
     if not dream or dream.couple_id != couple_id:
-        raise HTTPException(status_code=404, detail="Dream not found.")
+        raise HTTPException(status_code=404, detail="梦想未找到。")
     filename = f"dream_{dream_id}_{datetime.utcnow().timestamp()}.{file.filename.split('.')[-1]}"
     path = UPLOADS_IMAGES_DIR / filename
     with open(path, "wb") as f:
@@ -387,8 +387,8 @@ def delete_dream(
     couple_id = require_couple(user)
     dream = session.get(DreamItem, dream_id)
     if not dream or dream.couple_id != couple_id:
-        raise HTTPException(status_code=404, detail="Dream not found.")
+        raise HTTPException(status_code=404, detail="梦想未找到。")
     if dream.added_by != user.id:
-        raise HTTPException(status_code=403, detail="You can only delete dreams you added.")
+        raise HTTPException(status_code=403, detail="你只能删除自己添加的梦想。")
     session.delete(dream)
     session.commit()

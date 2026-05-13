@@ -19,7 +19,7 @@ router = APIRouter(prefix="/monthly", tags=["monthly"])
 
 def require_couple(user: User):
     if not user.couple_id:
-        raise HTTPException(status_code=400, detail="Debes pertenecer a una pareja")
+        raise HTTPException(status_code=400, detail="你需要属于一个情侣")
     return user.couple_id
 
 
@@ -66,7 +66,7 @@ def get_current_activity(user: User = Depends(get_current_user), session: Sessio
         )
     ).first()
     if not activity:
-        raise HTTPException(status_code=404, detail="No hay actividad asignada para este mes")
+        raise HTTPException(status_code=404, detail="本月没有分配活动")
     return build_activity_response(activity, session)
 
 
@@ -92,7 +92,7 @@ def create_activity(data: MonthlyActivityCreate, user: User = Depends(get_curren
         )
     ).first()
     if existing:
-        raise HTTPException(status_code=400, detail="Ya existe una actividad para ese mes")
+        raise HTTPException(status_code=400, detail="该月份已存在活动")
 
     # Check previous month is completed (blocking logic)
     if data.month == 1:
@@ -108,7 +108,7 @@ def create_activity(data: MonthlyActivityCreate, user: User = Depends(get_curren
         )
     ).first()
     if prev_activity and prev_activity.status != "completed":
-        raise HTTPException(status_code=400, detail=f"Deben completar la actividad de {prev_month}/{prev_year} primero")
+        raise HTTPException(status_code=400, detail=f"请先完成{prev_month}/{prev_year}的活动")
 
     activity = MonthlyActivity(couple_id=couple_id, created_by=user.id, **data.model_dump())
     session.add(activity)
@@ -128,7 +128,7 @@ def submit_entry(
     couple_id = require_couple(user)
     activity = session.get(MonthlyActivity, activity_id)
     if not activity or activity.couple_id != couple_id:
-        raise HTTPException(status_code=404, detail="Actividad no encontrada")
+        raise HTTPException(status_code=404, detail="活动未找到")
 
     existing_entry = session.exec(
         select(MonthlyEntry).where(
@@ -137,7 +137,7 @@ def submit_entry(
         )
     ).first()
     if existing_entry:
-        raise HTTPException(status_code=400, detail="Ya subiste tu entrada para esta actividad")
+        raise HTTPException(status_code=400, detail="你已经提交了该活动的作品")
 
     # Save photo
     UPLOADS_IMAGES_DIR.mkdir(parents=True, exist_ok=True)

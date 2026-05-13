@@ -43,9 +43,9 @@ export default function ResetPasswordForm() {
       navigate("/");
     } catch (err: any) {
       const detail = err?.response?.data?.detail;
-      if (detail === "Usuario no encontrado") {
+      if (detail === "未找到该用户") {
         setError(t("auth.reset.user.not.found"));
-      } else if (detail === "Codigo de pareja incorrecto") {
+      } else if (detail === "情侣密保码不正确") {
         setError(t("auth.reset.wrong.code"));
       } else {
         setError(t("auth.reset.error"));
@@ -57,13 +57,13 @@ export default function ResetPasswordForm() {
 
   return (
     <AuthShell
-      heroEyebrow="Volver al libro"
-      heroHeadline={{ lead: "Recupera tu llave,", accent: "continúa la historia." }}
+      heroEyebrow="回到书中"
+      heroHeadline={{ lead: "找回你的钥匙，", accent: "继续你们的故事。" }}
       heroSubtitle={t("auth.reset.tagline")}
     >
       <div className="mb-1 inline-flex items-center gap-2 text-[11px] uppercase tracking-[0.2em] text-burnt-400 dark:text-burnt-300">
         <Shield size={11} />
-        Recuperación segura
+        安全找回
       </div>
 
       <h1
@@ -173,7 +173,7 @@ export default function ResetPasswordForm() {
             <button
               type="button"
               onClick={() => setShowPassword((s) => !s)}
-              aria-label={showPassword ? "Ocultar contraseña" : "Mostrar contraseña"}
+              aria-label={showPassword ? "隐藏密码" : "显示密码"}
               aria-pressed={showPassword}
               className="absolute right-2 top-1/2 -translate-y-1/2 w-9 h-9 rounded-lg flex items-center justify-center text-warm-400 dark:text-charcoal-300 hover:text-charcoal-500 dark:hover:text-warm-200 hover:bg-warm-100/60 dark:hover:bg-dark-card-elevated transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-burnt-300"
             >

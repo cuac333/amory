@@ -53,11 +53,11 @@ function toEmbedUrl(url: string): string | null {
 }
 
 function detectLabel(url: string): string {
-  if (url.includes("/playlist/") || url.includes(":playlist:")) return "Playlist de Spotify";
-  if (url.includes("/album/") || url.includes(":album:")) return "Álbum de Spotify";
-  if (url.includes("/track/") || url.includes(":track:")) return "Canción de Spotify";
-  if (url.includes("/episode/") || url.includes(":episode:")) return "Episodio de Spotify";
-  if (url.includes("/show/") || url.includes(":show:")) return "Podcast de Spotify";
+  if (url.includes("/playlist/") || url.includes(":playlist:")) return "Spotify 歌单";
+  if (url.includes("/album/") || url.includes(":album:")) return "Spotify 专辑";
+  if (url.includes("/track/") || url.includes(":track:")) return "Spotify 歌曲";
+  if (url.includes("/episode/") || url.includes(":episode:")) return "Spotify 单集";
+  if (url.includes("/show/") || url.includes(":show:")) return "Spotify 播客";
   return "Spotify";
 }
 

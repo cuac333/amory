@@ -28,7 +28,7 @@ def verify_password(password: str, hashed: str) -> bool:
 def register(data: UserRegister, session: Session = Depends(get_session)):
     existing = session.exec(select(User).where(User.email == data.email)).first()
     if existing:
-        raise HTTPException(status_code=400, detail="El email ya está registrado")
+        raise HTTPException(status_code=400, detail="该邮箱已被注册")
 
     user = User(
         name=data.name,
@@ -54,7 +54,7 @@ def register(data: UserRegister, session: Session = Depends(get_session)):
 def login(data: UserLogin, session: Session = Depends(get_session)):
     user = session.exec(select(User).where(User.email == data.email)).first()
     if not user or not verify_password(data.password, user.password_hash):
-        raise HTTPException(status_code=401, detail="Credenciales inválidas")
+        raise HTTPException(status_code=401, detail="账号或密码错误")
 
     token = create_access_token({"sub": str(user.id)})
     return TokenResponse(
@@ -71,14 +71,14 @@ def login(data: UserLogin, session: Session = Depends(get_session)):
 def reset_password(data: PasswordReset, session: Session = Depends(get_session)):
     user = session.exec(select(User).where(User.email == data.email)).first()
     if not user or not user.couple_id:
-        raise HTTPException(status_code=404, detail="Usuario no encontrado")
+        raise HTTPException(status_code=404, detail="未找到该用户")
 
     couple = session.get(Couple, user.couple_id)
     if not couple or couple.password_code != data.couple_code:
-        raise HTTPException(status_code=403, detail="Codigo de pareja incorrecto")
+        raise HTTPException(status_code=403, detail="情侣密保码不正确")
 
     if len(data.new_password) < 6:
-        raise HTTPException(status_code=400, detail="La contrasena debe tener al menos 6 caracteres")
+        raise HTTPException(status_code=400, detail="密码长度至少为6个字符")
 
     user.password_hash = hash_password(data.new_password)
     session.add(user)
@@ -107,7 +107,7 @@ def get_me(user: User = Depends(get_current_user)):
 @router.post("/couple", response_model=CoupleResponse)
 def create_couple(data: CoupleCreate, user: User = Depends(get_current_user), session: Session = Depends(get_session)):
     if user.couple_id:
-        raise HTTPException(status_code=400, detail="Ya perteneces a una pareja")
+        raise HTTPException(status_code=400, detail="你已经属于一个情侣")
 
     invite_code = uuid.uuid4().hex[:8]
     couple = Couple(
@@ -134,15 +134,15 @@ def create_couple(data: CoupleCreate, user: User = Depends(get_current_user), se
 @router.post("/couple/join", response_model=CoupleResponse)
 def join_couple(data: CoupleJoin, user: User = Depends(get_current_user), session: Session = Depends(get_session)):
     if user.couple_id:
-        raise HTTPException(status_code=400, detail="Ya perteneces a una pareja")
+        raise HTTPException(status_code=400, detail="你已经属于一个情侣")
 
     couple = session.exec(select(Couple).where(Couple.invite_code == data.invite_code)).first()
     if not couple:
-        raise HTTPException(status_code=404, detail="Código de invitación inválido")
+        raise HTTPException(status_code=404, detail="邀请码无效")
 
     members = session.exec(select(User).where(User.couple_id == couple.id)).all()
     if len(members) >= 2:
-        raise HTTPException(status_code=400, detail="La pareja ya está completa")
+        raise HTTPException(status_code=400, detail="该情侣已满员")
 
     user.couple_id = couple.id
     user.role = "partner_2"
@@ -159,10 +159,10 @@ def join_couple(data: CoupleJoin, user: User = Depends(get_current_user), sessio
 @router.get("/couple", response_model=CoupleResponse)
 def get_couple(user: User = Depends(get_current_user), session: Session = Depends(get_session)):
     if not user.couple_id:
-        raise HTTPException(status_code=404, detail="No perteneces a una pareja")
+        raise HTTPException(status_code=404, detail="你不属于任何情侣")
     couple = session.get(Couple, user.couple_id)
     if not couple:
-        raise HTTPException(status_code=404, detail="Pareja no encontrada")
+        raise HTTPException(status_code=404, detail="情侣未找到")
     return CoupleResponse(
         id=couple.id, anniversary_date=couple.anniversary_date,
         invite_code=couple.invite_code, photo_url=couple.photo_url,
@@ -173,10 +173,10 @@ def get_couple(user: User = Depends(get_current_user), session: Session = Depend
 @router.post("/couple/verify-book")
 def verify_book_password(data: dict, user: User = Depends(get_current_user), session: Session = Depends(get_session)):
     if not user.couple_id:
-        raise HTTPException(status_code=404, detail="No perteneces a una pareja")
+        raise HTTPException(status_code=404, detail="你不属于任何情侣")
     couple = session.get(Couple, user.couple_id)
     if not couple:
-        raise HTTPException(status_code=404, detail="Pareja no encontrada")
+        raise HTTPException(status_code=404, detail="情侣未找到")
 
     # Check if there are clues configured
     clues = session.exec(
@@ -206,10 +206,10 @@ def verify_book_password(data: dict, user: User = Depends(get_current_user), ses
 @router.put("/couple", response_model=CoupleResponse)
 def update_couple(data: CoupleCreate, user: User = Depends(get_current_user), session: Session = Depends(get_session)):
     if not user.couple_id:
-        raise HTTPException(status_code=404, detail="No perteneces a una pareja")
+        raise HTTPException(status_code=404, detail="你不属于任何情侣")
     couple = session.get(Couple, user.couple_id)
     if not couple:
-        raise HTTPException(status_code=404, detail="Pareja no encontrada")
+        raise HTTPException(status_code=404, detail="情侣未找到")
     couple.anniversary_date = data.anniversary_date
     couple.password_code = data.password_code
     session.add(couple)
@@ -239,12 +239,12 @@ def update_me(name: str = None, user: User = Depends(get_current_user), session:
 @router.get("/partner", response_model=UserResponse)
 def get_partner(user: User = Depends(get_current_user), session: Session = Depends(get_session)):
     if not user.couple_id:
-        raise HTTPException(status_code=404, detail="No perteneces a una pareja")
+        raise HTTPException(status_code=404, detail="你不属于任何情侣")
     partner = session.exec(
         select(User).where(User.couple_id == user.couple_id, User.id != user.id)
     ).first()
     if not partner:
-        raise HTTPException(status_code=404, detail="Tu pareja aún no se ha unido")
+        raise HTTPException(status_code=404, detail="你的伴侣还没有加入")
     return UserResponse(
         id=partner.id, name=partner.name, email=partner.email,
         avatar_url=partner.avatar_url, role=partner.role,
@@ -283,10 +283,10 @@ async def upload_couple_photo(
     session: Session = Depends(get_session),
 ):
     if not user.couple_id:
-        raise HTTPException(status_code=404, detail="No perteneces a una pareja")
+        raise HTTPException(status_code=404, detail="你不属于任何情侣")
     couple = session.get(Couple, user.couple_id)
     if not couple:
-        raise HTTPException(status_code=404, detail="Pareja no encontrada")
+        raise HTTPException(status_code=404, detail="情侣未找到")
     UPLOADS_IMAGES_DIR.mkdir(parents=True, exist_ok=True)
     ext = file.filename.split(".")[-1] if file.filename else "jpg"
     filename = f"couple_{couple.id}_{uuid.uuid4().hex[:8]}.{ext}"

@@ -31,7 +31,7 @@ export default function SpotifyMiniPlayer() {
             <button onClick={toggle} className="flex-1 min-w-0 text-left">
               <p className="text-sm font-semibold text-charcoal-600 truncate">{label}</p>
               <p className="text-[10px] text-charcoal-300">
-                {expanded ? "Toca para minimizar" : "Toca para expandir"}
+                {expanded ? "点击最小化" : "点击展开"}
               </p>
             </button>
 

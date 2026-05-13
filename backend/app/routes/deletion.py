@@ -25,7 +25,7 @@ router = APIRouter(prefix="/deletion-requests", tags=["deletion"])
 
 def require_couple(user: User):
     if not user.couple_id:
-        raise HTTPException(status_code=400, detail="Debes pertenecer a una pareja")
+        raise HTTPException(status_code=400, detail="你需要属于一个情侣")
     return user.couple_id
 
 
@@ -62,10 +62,10 @@ def get_entity_title(entity_type: str, entity_id: int, session: Session) -> str:
     """Get a display title for the entity being requested for deletion."""
     model = ENTITY_MODEL_MAP.get(entity_type)
     if not model:
-        return "Elemento desconocido"
+        return "未知元素"
     entity = session.get(model, entity_id)
     if not entity:
-        return "Elemento eliminado"
+        return "已删除的元素"
     if hasattr(entity, "title"):
         return entity.title
     if hasattr(entity, "text"):
@@ -83,10 +83,10 @@ def validate_entity_belongs_to_couple(entity_type: str, entity_id: int, couple_i
     """Validate the entity exists and belongs to the couple."""
     model = ENTITY_MODEL_MAP.get(entity_type)
     if not model:
-        raise HTTPException(status_code=400, detail="Tipo de entidad no válido")
+        raise HTTPException(status_code=400, detail="无效的实体类型")
     entity = session.get(model, entity_id)
     if not entity or entity.couple_id != couple_id:
-        raise HTTPException(status_code=404, detail="Elemento no encontrado")
+        raise HTTPException(status_code=404, detail="元素未找到")
 
 
 def delete_entity(entity_type: str, entity_id: int, session: Session):
@@ -174,7 +174,7 @@ def request_deletion(
         )
     ).first()
     if existing:
-        raise HTTPException(status_code=400, detail="Ya existe una solicitud pendiente para este elemento")
+        raise HTTPException(status_code=400, detail="该元素已有待处理的删除请求")
 
     entity_title = get_entity_title(data.entity_type, data.entity_id, session)
 
@@ -188,7 +188,7 @@ def request_deletion(
     session.add(req)
     session.commit()
     session.refresh(req)
-    send_push_to_partner(user, "Solicitud de eliminacion", f"{user.name} quiere eliminar: {entity_title[:50]}", "/settings", session)
+    send_push_to_partner(user, "删除请求", f"{user.name}想删除: {entity_title[:50]}", "/settings", session)
     return build_response(req, session)
 
 
@@ -201,11 +201,11 @@ def approve_deletion(
     couple_id = require_couple(user)
     req = session.get(DeletionRequest, request_id)
     if not req or req.couple_id != couple_id:
-        raise HTTPException(status_code=404, detail="Solicitud no encontrada")
+        raise HTTPException(status_code=404, detail="请求未找到")
     if req.status != "pending":
-        raise HTTPException(status_code=400, detail="Esta solicitud ya fue resuelta")
+        raise HTTPException(status_code=400, detail="此请求已处理")
     if req.requested_by == user.id:
-        raise HTTPException(status_code=400, detail="No puedes aprobar tu propia solicitud")
+        raise HTTPException(status_code=400, detail="你不能批准自己的请求")
 
     # Approve and delete the entity
     req.status = "approved"
@@ -215,7 +215,7 @@ def approve_deletion(
 
     delete_entity(req.entity_type, req.entity_id, session)
     session.commit()
-    return {"ok": True, "message": "Elemento eliminado con el acuerdo de ambos"}
+    return {"ok": True, "message": "经双方同意已删除元素"}
 
 
 @router.put("/{request_id}/reject")
@@ -227,18 +227,18 @@ def reject_deletion(
     couple_id = require_couple(user)
     req = session.get(DeletionRequest, request_id)
     if not req or req.couple_id != couple_id:
-        raise HTTPException(status_code=404, detail="Solicitud no encontrada")
+        raise HTTPException(status_code=404, detail="请求未找到")
     if req.status != "pending":
-        raise HTTPException(status_code=400, detail="Esta solicitud ya fue resuelta")
+        raise HTTPException(status_code=400, detail="此请求已处理")
     if req.requested_by == user.id:
-        raise HTTPException(status_code=400, detail="No puedes rechazar tu propia solicitud, cancélala en su lugar")
+        raise HTTPException(status_code=400, detail="你不能拒绝自己的请求，请改为取消")
 
     req.status = "rejected"
     req.resolved_at = datetime.utcnow()
     req.resolved_by = user.id
     session.add(req)
     session.commit()
-    return {"ok": True, "message": "Solicitud de eliminación rechazada"}
+    return {"ok": True, "message": "删除请求已拒绝"}
 
 
 @router.delete("/{request_id}/cancel")
@@ -250,12 +250,12 @@ def cancel_deletion(
     couple_id = require_couple(user)
     req = session.get(DeletionRequest, request_id)
     if not req or req.couple_id != couple_id:
-        raise HTTPException(status_code=404, detail="Solicitud no encontrada")
+        raise HTTPException(status_code=404, detail="请求未找到")
     if req.status != "pending":
-        raise HTTPException(status_code=400, detail="Esta solicitud ya fue resuelta")
+        raise HTTPException(status_code=400, detail="此请求已处理")
     if req.requested_by != user.id:
-        raise HTTPException(status_code=400, detail="Solo quien solicitó puede cancelar")
+        raise HTTPException(status_code=400, detail="只有发起者可以取消")
 
     session.delete(req)
     session.commit()
-    return {"ok": True, "message": "Solicitud cancelada"}
+    return {"ok": True, "message": "请求已取消"}

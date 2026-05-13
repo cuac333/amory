@@ -46,7 +46,7 @@ const Page = forwardRef<HTMLDivElement, Props>(({ page, pageNumber }, ref) => {
             >
               <img
                 src={page.photo_url}
-                alt={page.title || "Recuerdo"}
+                alt={page.title || "回忆"}
                 className="w-full max-h-[180px] object-cover rounded-sm"
                 loading="lazy"
               />
@@ -61,7 +61,7 @@ const Page = forwardRef<HTMLDivElement, Props>(({ page, pageNumber }, ref) => {
               style={{ transform: `rotate(${(isEven ? -0.5 : 0.5)}deg)` }}
             >
               <ImageIcon size={28} className="text-warm-300" />
-              <span className="text-[11px] text-warm-300 font-medium">Foto del recuerdo</span>
+              <span className="text-[11px] text-warm-300 font-medium">回忆照片</span>
             </div>
           </div>
         )}
@@ -70,7 +70,7 @@ const Page = forwardRef<HTMLDivElement, Props>(({ page, pageNumber }, ref) => {
         <div className="flex-1 overflow-y-auto mb-3 relative">
           <Quote size={14} className="text-burnt-100/40 mb-1" />
           <p className="font-handwriting text-base md:text-lg text-charcoal-500/90 leading-relaxed pl-1">
-            {page.text || "Escribe aquí un recuerdo especial..."}
+            {page.text || "在这里写下一段特别的回忆..."}
           </p>
         </div>
 

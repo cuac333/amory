@@ -45,8 +45,8 @@ export interface AuthShellProps {
 
 export default function AuthShell({
   children,
-  heroEyebrow = "Para dos corazones",
-  heroHeadline = { lead: "Tu historia,", accent: "escrita juntos." },
+  heroEyebrow = "献给两颗心",
+  heroHeadline = { lead: "你们的故事，", accent: "一起书写。" },
   heroSubtitle,
 }: AuthShellProps) {
   return (
@@ -129,7 +129,7 @@ export default function AuthShell({
             fill="currentColor"
           />
           <span className="tracking-wide">
-            Hecho con amor, para los que se aman
+            用爱打造，为相爱的人
           </span>
         </div>
       </aside>

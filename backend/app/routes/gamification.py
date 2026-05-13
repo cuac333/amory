@@ -27,7 +27,7 @@ router = APIRouter(tags=["gamification"])
 
 def require_couple(user: User) -> int:
     if not user.couple_id:
-        raise HTTPException(status_code=400, detail="User is not part of a couple")
+        raise HTTPException(status_code=400, detail="用户不属于任何情侣")
     return user.couple_id
 
 
@@ -58,21 +58,21 @@ def seed_achievements(
         select(Achievement).where(Achievement.couple_id == couple_id)
     ).first()
     if existing:
-        raise HTTPException(status_code=400, detail="Achievements already seeded")
+        raise HTTPException(status_code=400, detail="成就已初始化")
 
     presets = [
-        {"key": "first_photo", "title": "Primera Foto", "description": "Subieron su primera foto juntos", "icon": "camera"},
-        {"key": "10_diary", "title": "Diario Fiel", "description": "Escribieron 10 entradas en el diario", "icon": "pen"},
-        {"key": "first_outing", "title": "Primera Salida", "description": "Documentaron su primera salida", "icon": "map"},
-        {"key": "quiz_master", "title": "Quiz Master", "description": "Respondieron 20 preguntas del quiz", "icon": "brain"},
-        {"key": "5_recipes", "title": "Chefs Juntos", "description": "Agregaron 5 recetas", "icon": "chef"},
-        {"key": "streak_3", "title": "Racha de 3", "description": "Completaron 3 actividades mensuales seguidas", "icon": "fire"},
-        {"key": "10_songs", "title": "Playlist Lovers", "description": "Agregaron 10 canciones a su playlist", "icon": "music"},
-        {"key": "all_bingo", "title": "Bingo Completo", "description": "Completaron todo el tablero de bingo", "icon": "grid"},
-        {"key": "first_dream", "title": "Soñadores", "description": "Agregaron su primer sueño juntos", "icon": "sparkles"},
-        {"key": "budget_saver", "title": "Ahorradores", "description": "Registraron 10 gastos de citas", "icon": "piggy"},
-        {"key": "love_letters", "title": "Cartas de Amor", "description": "Escribieron 5 cartas secretas", "icon": "mail"},
-        {"key": "weekly_5", "title": "5 Desafíos", "description": "Completaron 5 desafíos semanales", "icon": "trophy"},
+        {"key": "first_photo", "title": "第一张照片", "description": "上传了你们的第一张合照", "icon": "camera"},
+        {"key": "10_diary", "title": "忠实日记", "description": "写下了10篇日记", "icon": "pen"},
+        {"key": "first_outing", "title": "第一次约会", "description": "记录了你们的第一次约会", "icon": "map"},
+        {"key": "quiz_master", "title": "答题达人", "description": "回答了20道测试题", "icon": "brain"},
+        {"key": "5_recipes", "title": "一起下厨", "description": "添加了5道菜谱", "icon": "chef"},
+        {"key": "streak_3", "title": "连续3月", "description": "连续完成了3个月度活动", "icon": "fire"},
+        {"key": "10_songs", "title": "歌单爱好者", "description": "在歌单中添加了10首歌", "icon": "music"},
+        {"key": "all_bingo", "title": "宾果通关", "description": "完成了整个宾果面板", "icon": "grid"},
+        {"key": "first_dream", "title": "梦想家", "description": "添加了你们的第一个梦想", "icon": "sparkles"},
+        {"key": "budget_saver", "title": "省钱达人", "description": "记录了10次约会开销", "icon": "piggy"},
+        {"key": "love_letters", "title": "情书", "description": "写了5封秘密情书", "icon": "mail"},
+        {"key": "weekly_5", "title": "5次挑战", "description": "完成了5次每周挑战", "icon": "trophy"},
     ]
 
     created = []
@@ -156,21 +156,21 @@ def check_achievements(
 # ---------------------------------------------------------------------------
 
 PRESET_CHALLENGES = [
-    "Cocinar algo nuevo juntos",
-    "Escribirse una carta de amor",
-    "Ver el atardecer juntos",
-    "Hacerse un masaje",
-    "Llamarse sin razón solo para decir te amo",
-    "Preparar el desayuno para el otro",
-    "Tomar una foto juntos",
-    "Contar 3 cosas que admiras del otro",
-    "Bailar una canción en la sala",
-    "Probar un restaurante nuevo",
-    "Hacer ejercicio juntos",
-    "Ver una película que elija el otro",
-    "Escribir un poema corto",
-    "Planear una cita sorpresa",
-    "Desconectarse del celular una tarde",
+    "一起做一道新菜",
+    "给对方写一封情书",
+    "一起看日落",
+    "给对方按摩",
+    "无缘无故打电话说爱你",
+    "为对方准备早餐",
+    "一起拍一张合照",
+    "说出3件你欣赏对方的事",
+    "在客厅跳一支舞",
+    "尝试一家新餐厅",
+    "一起做运动",
+    "看一部对方选的电影",
+    "写一首短诗",
+    "策划一次惊喜约会",
+    "一个下午不碰手机",
 ]
 
 
@@ -260,9 +260,9 @@ def complete_challenge(
 
     challenge = session.get(WeeklyChallenge, id)
     if not challenge or challenge.couple_id != couple_id:
-        raise HTTPException(status_code=404, detail="Challenge not found")
+        raise HTTPException(status_code=404, detail="挑战未找到")
     if challenge.status == "completed":
-        raise HTTPException(status_code=400, detail="Challenge already completed")
+        raise HTTPException(status_code=400, detail="挑战已完成")
 
     challenge.status = "completed"
     challenge.completed_by = user.id
@@ -292,7 +292,7 @@ def seed_challenges(
         )
     ).first()
     if existing:
-        raise HTTPException(status_code=400, detail="Preset challenges already seeded")
+        raise HTTPException(status_code=400, detail="预设挑战已初始化")
 
     monday = _current_monday()
     created = []
@@ -323,7 +323,7 @@ def delete_challenge(
 
     challenge = session.get(WeeklyChallenge, id)
     if not challenge or challenge.couple_id != couple_id:
-        raise HTTPException(status_code=404, detail="Challenge not found")
+        raise HTTPException(status_code=404, detail="挑战未找到")
 
     session.delete(challenge)
     session.commit()
@@ -587,9 +587,9 @@ def delete_expense(
 
     expense = session.get(DateExpense, id)
     if not expense or expense.couple_id != couple_id:
-        raise HTTPException(status_code=404, detail="Expense not found")
+        raise HTTPException(status_code=404, detail="开支未找到")
     if expense.added_by != user.id:
-        raise HTTPException(status_code=403, detail="Only the creator can delete this expense")
+        raise HTTPException(status_code=403, detail="只有创建者可以删除此开支")
 
     session.delete(expense)
     session.commit()
@@ -658,9 +658,9 @@ def delete_calendar_event(
 
     event = session.get(SharedCalendarEvent, id)
     if not event or event.couple_id != couple_id:
-        raise HTTPException(status_code=404, detail="Event not found")
+        raise HTTPException(status_code=404, detail="事件未找到")
     if event.added_by != user.id:
-        raise HTTPException(status_code=403, detail="Only the creator can delete this event")
+        raise HTTPException(status_code=403, detail="只有创建者可以删除此事件")
 
     session.delete(event)
     session.commit()

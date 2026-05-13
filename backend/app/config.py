@@ -29,4 +29,4 @@ VAPID_CLAIMS_EMAIL = os.getenv("VAPID_EMAIL", "mailto:amory@example.com")
 # Get a consumer key from https://developer.ticketmaster.com/
 TICKETMASTER_API_KEY = os.getenv("TICKETMASTER_API_KEY", "")
 TICKETMASTER_POLL_SECONDS = int(os.getenv("TICKETMASTER_POLL_SECONDS", "300"))  # 5 min
-TICKETMASTER_COUNTRY = os.getenv("TICKETMASTER_COUNTRY", "")  # "" = búsqueda global
+TICKETMASTER_COUNTRY = os.getenv("TICKETMASTER_COUNTRY", "")  # "" = 全局搜索

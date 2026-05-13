@@ -16,7 +16,7 @@ router = APIRouter(tags=["secret & guestbook"])
 
 def require_couple(user: User):
     if not user.couple_id:
-        raise HTTPException(status_code=400, detail="Debes pertenecer a una pareja")
+        raise HTTPException(status_code=400, detail="你需要属于一个情侣")
     return user.couple_id
 
 
@@ -27,7 +27,7 @@ def create_secret_letter(data: SecretLetterCreate, user: User = Depends(get_curr
     couple_id = require_couple(user)
     existing = session.exec(select(SecretLetter).where(SecretLetter.couple_id == couple_id)).first()
     if existing:
-        raise HTTPException(status_code=400, detail="Ya existe una carta secreta")
+        raise HTTPException(status_code=400, detail="已存在一封密信")
 
     letter = SecretLetter(couple_id=couple_id, content=data.content, unlock_code=data.unlock_code)
     session.add(letter)
@@ -41,13 +41,13 @@ def unlock_secret_letter(data: SecretLetterUnlock, user: User = Depends(get_curr
     couple_id = require_couple(user)
     letter = session.exec(select(SecretLetter).where(SecretLetter.couple_id == couple_id)).first()
     if not letter:
-        raise HTTPException(status_code=404, detail="No hay carta secreta")
+        raise HTTPException(status_code=404, detail="没有密信")
 
     if letter.is_unlocked:
         return SecretLetterResponse(id=letter.id, content=letter.content, is_unlocked=True, created_at=letter.created_at)
 
     if data.code != letter.unlock_code:
-        raise HTTPException(status_code=400, detail="Código incorrecto")
+        raise HTTPException(status_code=400, detail="验证码错误")
 
     letter.is_unlocked = True
     letter.unlocked_at = datetime.utcnow()
@@ -61,7 +61,7 @@ def get_secret_letter(user: User = Depends(get_current_user), session: Session =
     couple_id = require_couple(user)
     letter = session.exec(select(SecretLetter).where(SecretLetter.couple_id == couple_id)).first()
     if not letter:
-        raise HTTPException(status_code=404, detail="No hay carta secreta")
+        raise HTTPException(status_code=404, detail="没有密信")
 
     if letter.is_unlocked:
         return SecretLetterResponse(id=letter.id, content=letter.content, is_unlocked=True, created_at=letter.created_at)
@@ -75,7 +75,7 @@ GUEST_PASSWORD = "amory2026"
 @router.post("/guestbook", response_model=GuestBookEntryResponse)
 def add_guestbook_entry(data: GuestBookEntryCreate, session: Session = Depends(get_session)):
     if data.guest_password != GUEST_PASSWORD:
-        raise HTTPException(status_code=401, detail="Contraseña de invitado incorrecta")
+        raise HTTPException(status_code=401, detail="访客密码错误")
 
     entry = GuestBookEntry(couple_id=1, author_name=data.author_name, message=data.message)
     session.add(entry)

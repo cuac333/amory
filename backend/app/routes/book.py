@@ -18,7 +18,7 @@ router = APIRouter(prefix="/book", tags=["book"])
 
 def require_couple(user: User):
     if not user.couple_id:
-        raise HTTPException(status_code=400, detail="Debes pertenecer a una pareja")
+        raise HTTPException(status_code=400, detail="你需要属于一个情侣")
     return user.couple_id
 
 
@@ -65,7 +65,7 @@ def update_page(page_id: int, data: BookPageUpdate, user: User = Depends(get_cur
     couple_id = require_couple(user)
     page = session.get(BookPage, page_id)
     if not page or page.couple_id != couple_id:
-        raise HTTPException(status_code=404, detail="Página no encontrada")
+        raise HTTPException(status_code=404, detail="页面未找到")
 
     update_data = data.model_dump(exclude_unset=True)
     for key, value in update_data.items():
@@ -86,7 +86,7 @@ def delete_page(page_id: int, user: User = Depends(get_current_user), session: S
     couple_id = require_couple(user)
     page = session.get(BookPage, page_id)
     if not page or page.couple_id != couple_id:
-        raise HTTPException(status_code=404, detail="Página no encontrada")
+        raise HTTPException(status_code=404, detail="页面未找到")
     session.delete(page)
     session.commit()
     return {"ok": True}
@@ -109,7 +109,7 @@ def upload_photo(page_id: int, file: UploadFile = File(...), user: User = Depend
     couple_id = require_couple(user)
     page = session.get(BookPage, page_id)
     if not page or page.couple_id != couple_id:
-        raise HTTPException(status_code=404, detail="Página no encontrada")
+        raise HTTPException(status_code=404, detail="页面未找到")
 
     UPLOADS_IMAGES_DIR.mkdir(parents=True, exist_ok=True)
     filename = f"page_{page_id}_{file.filename}"
@@ -128,7 +128,7 @@ def upload_audio(page_id: int, file: UploadFile = File(...), user: User = Depend
     couple_id = require_couple(user)
     page = session.get(BookPage, page_id)
     if not page or page.couple_id != couple_id:
-        raise HTTPException(status_code=404, detail="Página no encontrada")
+        raise HTTPException(status_code=404, detail="页面未找到")
 
     UPLOADS_AUDIO_DIR.mkdir(parents=True, exist_ok=True)
     filename = f"page_{page_id}_{file.filename}"
@@ -155,7 +155,7 @@ def upload_frame_photo(
     couple_id = require_couple(user)
     page = session.get(BookPage, page_id)
     if not page or page.couple_id != couple_id:
-        raise HTTPException(status_code=404, detail="Página no encontrada")
+        raise HTTPException(status_code=404, detail="页面未找到")
 
     UPLOADS_IMAGES_DIR.mkdir(parents=True, exist_ok=True)
     filename = f"frame_{page_id}_{frame_index}_{file.filename}"
@@ -219,10 +219,10 @@ def update_frame_photo(
     couple_id = require_couple(user)
     page = session.get(BookPage, page_id)
     if not page or page.couple_id != couple_id:
-        raise HTTPException(status_code=404, detail="Página no encontrada")
+        raise HTTPException(status_code=404, detail="页面未找到")
     photo = session.get(PagePhoto, photo_id)
     if not photo or photo.page_id != page_id:
-        raise HTTPException(status_code=404, detail="Foto no encontrada")
+        raise HTTPException(status_code=404, detail="照片未找到")
     for key in ("caption", "taken_date", "place_name", "latitude", "longitude"):
         if key in data:
             setattr(photo, key, data[key])

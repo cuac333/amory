@@ -21,8 +21,8 @@ const CATEGORIES = [
   { value: "food", label: "monthly.cat.food", icon: UtensilsCrossed, gradient: "from-sandy-400 to-sandy-500", bg: "bg-sandy-50 dark:bg-sandy-800/20", text: "text-sandy-500", ring: "ring-sandy-200" },
 ];
 
-const MONTH_NAMES_ES = ["Ene", "Feb", "Mar", "Abr", "May", "Jun", "Jul", "Ago", "Sep", "Oct", "Nov", "Dic"];
-const MONTH_FULL_ES = ["Enero", "Febrero", "Marzo", "Abril", "Mayo", "Junio", "Julio", "Agosto", "Septiembre", "Octubre", "Noviembre", "Diciembre"];
+const MONTH_NAMES_ES = ["1月", "2月", "3月", "4月", "5月", "6月", "7月", "8月", "9月", "10月", "11月", "12月"];
+const MONTH_FULL_ES = ["一月", "二月", "三月", "四月", "五月", "六月", "七月", "八月", "九月", "十月", "十一月", "十二月"];
 
 export default function MonthlyPage() {
   const { user } = useAuth();

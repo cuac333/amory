@@ -58,12 +58,12 @@ export default function WelcomeScreen({ partnerName, onEnter }: Props) {
             <h1 className="text-5xl md:text-7xl font-display text-white mb-6 drop-shadow-lg">
               Amory
             </h1>
-            <p className="text-white/80 text-lg mb-8">Un regalo especial para ti</p>
+            <p className="text-white/80 text-lg mb-8">给你的特别礼物</p>
             <button
               onClick={handleStart}
               className="px-8 py-3 bg-white text-primary rounded-full font-medium text-lg hover:scale-105 transition-transform shadow-xl"
             >
-              Abrir regalo
+              打开礼物
             </button>
           </motion.div>
         )}
@@ -76,7 +76,7 @@ export default function WelcomeScreen({ partnerName, onEnter }: Props) {
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, y: -20 }}
           >
-            Para {partnerName}...
+            给 {partnerName}...
           </motion.p>
         )}
 
@@ -88,7 +88,7 @@ export default function WelcomeScreen({ partnerName, onEnter }: Props) {
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, y: -20 }}
           >
-            Con todo mi amor
+            献上我全部的爱
           </motion.p>
         )}
 

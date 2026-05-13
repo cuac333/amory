@@ -8,7 +8,7 @@ interface Props {
   placeholder?: string;
 }
 
-export default function TimePicker({ value, onChange, placeholder = "Selecciona una hora" }: Props) {
+export default function TimePicker({ value, onChange, placeholder = "选择时间" }: Props) {
   const [open, setOpen] = useState(false);
 
   const parsed = value ? value.split(":").map(Number) : [12, 0];
@@ -185,14 +185,14 @@ export default function TimePicker({ value, onChange, placeholder = "Selecciona 
                 }}
                 className="flex-1 py-1.5 text-[11px] font-medium text-charcoal-400 bg-warm-50 rounded-lg hover:bg-warm-100 transition-colors"
               >
-                Sin hora
+                不设时间
               </button>
               <button
                 type="button"
                 onClick={() => setOpen(false)}
                 className="flex-1 py-1.5 text-[11px] font-medium text-burnt-400 bg-burnt-50/50 rounded-lg hover:bg-burnt-50 transition-colors"
               >
-                Confirmar
+                确认
               </button>
             </div>
           </motion.div>

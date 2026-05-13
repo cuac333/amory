@@ -30,62 +30,62 @@ interface FramePhotoData {
 
 const PLACEHOLDER_PAGES: BookPageType[] = [
   {
-    id: -1, couple_id: 0, title: "Nuestro Primer Año", text: "Aquí comienza nuestra historia juntos.",
+    id: -1, couple_id: 0, title: "我们的第一年", text: "我们的故事从这里开始。",
     photo_url: null, audio_url: null, page_type: "cover", order: 0,
     particle_type: null, created_at: "2025-03-01", likes_count: 0, comments_count: 0,
   },
   {
-    id: -2, couple_id: 0, title: "Dónde todo comenzó",
-    text: "Aquí es donde empezó nuestra historia. Aquel día todo cambió, y desde entonces cada momento juntos ha sido un regalo que atesoraré por siempre.",
+    id: -2, couple_id: 0, title: "一切的开始",
+    text: "我们的故事从这里开始。那一天一切都变了，从那以后在一起的每一刻都是我永远珍惜的礼物。",
     photo_url: null, audio_url: null, page_type: "inner", order: 1,
     particle_type: null, created_at: "2025-03-15", likes_count: 3, comments_count: 1,
   },
   {
-    id: -3, couple_id: 0, title: "Nuestra primera cita",
-    text: "Los nervios, las risas, ese momento en que supe que eras especial. Cada detalle de ese día está grabado en mi memoria como si hubiera sido ayer.",
+    id: -3, couple_id: 0, title: "我们的第一次约会",
+    text: "紧张、欢笑，还有我知道你很特别的那一刻。那天的每一个细节都深深刻在我的记忆中，仿佛就在昨天。",
     photo_url: null, audio_url: null, page_type: "inner", order: 2,
     particle_type: null, created_at: "2025-04-02", likes_count: 5, comments_count: 2,
   },
   {
-    id: -4, couple_id: 0, title: "Momentos que atesoro",
-    text: "Las tardes juntos, los paseos sin rumbo, las conversaciones hasta la madrugada. Cada pequeño momento contigo se convierte en un recuerdo que guardo en el corazón.",
+    id: -4, couple_id: 0, title: "我珍藏的时刻",
+    text: "一起度过的午后、漫无目的的散步、聊到天亮的对话。和你在一起的每一个小瞬间，都变成了我心中珍藏的回忆。",
     photo_url: null, audio_url: null, page_type: "inner", order: 3,
     particle_type: null, created_at: "2025-05-10", likes_count: 2, comments_count: 0,
   },
   {
-    id: -5, couple_id: 0, title: "Nuestro lugar favorito",
-    text: "Ese sitio que se convirtió en nuestro refugio, donde el mundo se detiene y solo existimos tú y yo. Prometo llevarte ahí siempre que necesitemos escapar.",
+    id: -5, couple_id: 0, title: "我们最喜欢的地方",
+    text: "那个成为我们避风港的地方，世界在那里停止，只剩下你和我。我承诺每当我们需要逃离时，都会带你回到那里。",
     photo_url: null, audio_url: null, page_type: "inner", order: 4,
     particle_type: null, created_at: "2025-07-20", likes_count: 4, comments_count: 1,
   },
   {
-    id: -6, couple_id: 0, title: "Lo que más amo de ti",
-    text: "Tu risa, tu forma de mirarme, cómo haces que todo sea mejor con solo estar ahí. No hay palabras suficientes para describir todo lo que significas para mí.",
+    id: -6, couple_id: 0, title: "我最爱你的地方",
+    text: "你的笑容、你看我的方式、你仅凭存在就让一切变得更美好。没有任何语言能描述你对我的全部意义。",
     photo_url: null, audio_url: null, page_type: "inner", order: 5,
     particle_type: null, created_at: "2025-09-14", likes_count: 8, comments_count: 3,
   },
   {
-    id: -7, couple_id: 0, title: "Y esto es solo el comienzo",
-    text: "Y esta es solo el comienzo de nuestra historia...",
+    id: -7, couple_id: 0, title: "而这仅仅是开始",
+    text: "而这仅仅是我们故事的开始...",
     photo_url: null, audio_url: null, page_type: "back_cover", order: 6,
     particle_type: null, created_at: "2026-03-01", likes_count: 0, comments_count: 0,
   },
 ];
 
 const MONTH_DEFAULT_CONTENT: Record<string, { title: string; text: string }> = {
-  "2025-2": { title: "Donde todo comenzó", text: "Marzo de 2025, el mes que cambió todo. Aquí empezó nuestra historia de amor y cada día desde entonces ha valido la pena." },
-  "2025-3": { title: "Descubriéndonos", text: "Abril trajo las primeras aventuras juntos, esas conversaciones largas y las mariposas en el estómago que nunca se olvidan." },
-  "2025-4": { title: "Creciendo juntos", text: "En mayo empezamos a construir rutinas juntos, esos pequeños rituales que hacen que una relación sea especial." },
-  "2025-5": { title: "Nuestro primer verano", text: "Junio llegó con calor y con ganas de vivir todo juntos. Los planes, las salidas, las risas interminables." },
-  "2025-6": { title: "Aventuras de julio", text: "Julio fue de explorar, de salir de la zona de confort y descubrir que juntos todo es mejor." },
-  "2025-7": { title: "Agosto juntos", text: "Un mes para disfrutar, para las tardes largas, los helados y las noches mirando series acurrucados." },
-  "2025-8": { title: "Septiembre especial", text: "Medio año juntos se siente como un pestañeo. Septiembre trajo nuevos recuerdos y la certeza de que esto es real." },
-  "2025-9": { title: "Octubre de nosotros", text: "Las noches más frescas, las películas de terror, Halloween juntos. Octubre fue mágico a tu lado." },
-  "2025-10": { title: "Noviembre cálido", text: "Aunque afuera hace frío, entre nosotros siempre hay calor. Noviembre fue de abrazos largos y café juntos." },
-  "2025-11": { title: "Diciembre mágico", text: "Navidad juntos, luces, regalos y el mejor regalo de todos: tenernos el uno al otro." },
-  "2026-0": { title: "Año nuevo, mismo amor", text: "Enero de 2026 empezó con la promesa de seguir escribiendo esta historia juntos, página por página." },
-  "2026-1": { title: "Febrero del amor", text: "El mes del amor pero para nosotros todos los meses lo son. Febrero fue de detalles, sorpresas y mucho cariño." },
-  "2026-2": { title: "Un año juntos", text: "¡Llegamos a marzo de 2026! Un año entero de amor, risas, aprendizajes y la certeza de que queremos muchos más." },
+  "2025-2": { title: "一切的开始", text: "2025年3月，改变一切的月份。我们的爱情故事从这里开始，从那以后的每一天都值得。" },
+  "2025-3": { title: "互相了解", text: "四月带来了我们第一次一起冒险，那些长长的对话和永远不会忘记的心动。" },
+  "2025-4": { title: "一起成长", text: "五月我们开始一起建立日常，那些让感情变得特别的小仪式。" },
+  "2025-5": { title: "我们的第一个夏天", text: "六月带着热情到来，想要一起经历所有事情。计划、出行、无尽的欢笑。" },
+  "2025-6": { title: "七月冒险", text: "七月是探索的月份，走出舒适区，发现在一起一切都更美好。" },
+  "2025-7": { title: "八月在一起", text: "一个享受的月份，漫长的午后、冰淇淋和依偎看剧的夜晚。" },
+  "2025-8": { title: "特别的九月", text: "在一起半年感觉就像一眨眼。九月带来了新的回忆和这是真实的确定感。" },
+  "2025-9": { title: "我们的十月", text: "更凉的夜晚、恐怖片、一起过万圣节。有你在身边的十月是魔法般的。" },
+  "2025-10": { title: "温暖的十一月", text: "虽然外面很冷，但我们之间总是温暖的。十一月是长长的拥抱和一起喝咖啡。" },
+  "2025-11": { title: "魔法般的十二月", text: "一起过圣诞、灯光、礼物，还有最好的礼物：拥有彼此。" },
+  "2026-0": { title: "新年，同样的爱", text: "2026年一月带着继续一起书写这个故事的承诺开始，一页一页地。" },
+  "2026-1": { title: "爱情的二月", text: "爱情的月份，但对我们来说每个月都是。二月充满了心意、惊喜和满满的爱。" },
+  "2026-2": { title: "在一起一年", text: "我们来到了2026年三月！整整一年的爱、欢笑、成长，以及想要更多的确定。" },
 };
 
 function generateTimelineMonths() {
@@ -95,8 +95,8 @@ function generateTimelineMonths() {
   const months: { year: number; month: number; label: string; shortLabel: string }[] = [];
   let y = 2025;
   let m = 2;
-  const MONTH_NAMES = ["Enero", "Febrero", "Marzo", "Abril", "Mayo", "Junio", "Julio", "Agosto", "Septiembre", "Octubre", "Noviembre", "Diciembre"];
-  const MONTH_SHORT = ["Ene", "Feb", "Mar", "Abr", "May", "Jun", "Jul", "Ago", "Sep", "Oct", "Nov", "Dic"];
+  const MONTH_NAMES = ["一月", "二月", "三月", "四月", "五月", "六月", "七月", "八月", "九月", "十月", "十一月", "十二月"];
+  const MONTH_SHORT = ["1月", "2月", "3月", "4月", "5月", "6月", "7月", "8月", "9月", "10月", "11月", "12月"];
 
   while (true) {
     months.push({ year: y, month: m, label: `${MONTH_NAMES[m]} ${y}`, shortLabel: `${MONTH_SHORT[m]} ${y}` });
@@ -110,8 +110,8 @@ function generateTimelineMonths() {
 
 function getMonthDefault(year: number, month: number): BookPageType {
   const key = `${year}-${month}`;
-  const MONTH_NAMES = ["Enero", "Febrero", "Marzo", "Abril", "Mayo", "Junio", "Julio", "Agosto", "Septiembre", "Octubre", "Noviembre", "Diciembre"];
-  const content = MONTH_DEFAULT_CONTENT[key] || { title: MONTH_NAMES[month], text: "Un mes más de nuestra historia juntos." };
+  const MONTH_NAMES = ["一月", "二月", "三月", "四月", "五月", "六月", "七月", "八月", "九月", "十月", "十一月", "十二月"];
+  const content = MONTH_DEFAULT_CONTENT[key] || { title: MONTH_NAMES[month], text: "我们故事中的又一个月。" };
   return {
     id: -(year * 100 + month),
     couple_id: 0,
@@ -133,10 +133,10 @@ function getEventMonth(dateStr: string) {
   return { year: d.getFullYear(), month: d.getMonth() };
 }
 
-const MONTH_SHORT_FMT = ["Ene", "Feb", "Mar", "Abr", "May", "Jun", "Jul", "Ago", "Sep", "Oct", "Nov", "Dic"];
+const MONTH_SHORT_FMT = ["1月", "2月", "3月", "4月", "5月", "6月", "7月", "8月", "9月", "10月", "11月", "12月"];
 function formatDate(dateStr: string) {
   const d = new Date(dateStr);
-  return `${d.getDate()} ${MONTH_SHORT_FMT[d.getMonth()]} ${d.getFullYear()}`;
+  return `${d.getFullYear()}年${MONTH_SHORT_FMT[d.getMonth()]}${d.getDate()}日`;
 }
 
 /* ============================================================
@@ -373,7 +373,7 @@ export default function BookPage() {
           );
         })}
 
-        {/* ─ "Continuará" ─ */}
+        {/* ─ 未完待续 ─ */}
         <motion.div
           initial={{ opacity: 0 }}
           whileInView={{ opacity: 1 }}
@@ -485,7 +485,7 @@ function TimelineCard({ page, hasEvent, faded, gradient, onSelect, deleteRequest
         <div className="p-3.5 md:p-4">
           <div className="flex items-start justify-between gap-2 mb-1">
             <h3 className="font-display font-semibold text-charcoal-700 dark:text-warm-300 text-sm md:text-base group-hover:text-burnt-400 transition-colors leading-tight">
-              {page.title || "Sin título"}
+              {page.title || "无标题"}
             </h3>
             {page.id > 0 && onDeleteAction && (
               <div className="shrink-0" onClick={(e) => e.stopPropagation()}>
@@ -600,7 +600,7 @@ function FloatingFrame({ index, url, meta, onUpload, onClick, style }: {
           }`}>
             <input type="file" accept="image/*" onChange={handleFile} className="hidden" />
             <Camera size={20} className="text-warm-300/70 mb-1" />
-            <span className="text-[9px] text-warm-300/70 font-medium">Foto</span>
+            <span className="text-[9px] text-warm-300/70 font-medium">照片</span>
           </label>
         )}
         <div className="absolute -top-2 left-1/2 -translate-x-1/2 w-10 h-3.5 bg-sandy-100/70 rounded-sm" style={{ clipPath: "polygon(8% 0%, 92% 0%, 100% 100%, 0% 100%)" }} />
@@ -951,7 +951,7 @@ function StoryModal({ page: initialPage, onClose, onPageCreated }: {
               ) : (
                 <button onClick={() => setEditingTitle(true)} className="group flex items-center gap-2 text-left w-full">
                   <h2 className="font-display text-2xl md:text-3xl font-bold text-charcoal-700 dark:text-warm-200 leading-tight">
-                    {title || "Sin título"}
+                    {title || "无标题"}
                   </h2>
                   <Pencil size={14} className="text-charcoal-300 opacity-0 group-hover:opacity-100 transition-opacity shrink-0" />
                 </button>

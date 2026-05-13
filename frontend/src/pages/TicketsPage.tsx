@@ -33,32 +33,32 @@ interface ConfigInfo {
 }
 
 const STATUS_META: Record<string, { label: string; tone: string; Icon: typeof CheckCircle2 }> = {
-  onsale: { label: "Disponibles", tone: "bg-mint-100 text-mint-700 border-mint-200 dark:bg-mint-500/15 dark:text-mint-300 dark:border-mint-500/30", Icon: CheckCircle2 },
-  offsale: { label: "Agotadas", tone: "bg-warm-100 text-charcoal-500 border-warm-200 dark:bg-[#2e3638] dark:text-charcoal-200 dark:border-[#3a4244]", Icon: XCircle },
-  cancelled: { label: "Cancelado", tone: "bg-burnt-50 text-burnt-600 border-burnt-200 dark:bg-burnt-500/15 dark:text-burnt-300 dark:border-burnt-500/30", Icon: XCircle },
-  rescheduled: { label: "Reprogramado", tone: "bg-sandy-50 text-sandy-700 border-sandy-200 dark:bg-sandy-500/15 dark:text-sandy-300 dark:border-sandy-500/30", Icon: AlertTriangle },
-  postponed: { label: "Pospuesto", tone: "bg-sandy-50 text-sandy-700 border-sandy-200 dark:bg-sandy-500/15 dark:text-sandy-300 dark:border-sandy-500/30", Icon: AlertTriangle },
-  unknown: { label: "Desconocido", tone: "bg-warm-100 text-charcoal-400 border-warm-200 dark:bg-[#2e3638] dark:text-charcoal-300", Icon: Clock },
+  onsale: { label: "可购买", tone: "bg-mint-100 text-mint-700 border-mint-200 dark:bg-mint-500/15 dark:text-mint-300 dark:border-mint-500/30", Icon: CheckCircle2 },
+  offsale: { label: "已售罄", tone: "bg-warm-100 text-charcoal-500 border-warm-200 dark:bg-[#2e3638] dark:text-charcoal-200 dark:border-[#3a4244]", Icon: XCircle },
+  cancelled: { label: "已取消", tone: "bg-burnt-50 text-burnt-600 border-burnt-200 dark:bg-burnt-500/15 dark:text-burnt-300 dark:border-burnt-500/30", Icon: XCircle },
+  rescheduled: { label: "已改期", tone: "bg-sandy-50 text-sandy-700 border-sandy-200 dark:bg-sandy-500/15 dark:text-sandy-300 dark:border-sandy-500/30", Icon: AlertTriangle },
+  postponed: { label: "已延期", tone: "bg-sandy-50 text-sandy-700 border-sandy-200 dark:bg-sandy-500/15 dark:text-sandy-300 dark:border-sandy-500/30", Icon: AlertTriangle },
+  unknown: { label: "未知", tone: "bg-warm-100 text-charcoal-400 border-warm-200 dark:bg-[#2e3638] dark:text-charcoal-300", Icon: Clock },
 };
 
 function formatDate(iso: string | null): string {
   if (!iso) return "";
   try {
     const d = new Date(iso);
-    return d.toLocaleString("es", { day: "numeric", month: "short", year: "numeric", hour: "2-digit", minute: "2-digit" });
+    return d.toLocaleString("zh-CN", { day: "numeric", month: "short", year: "numeric", hour: "2-digit", minute: "2-digit" });
   } catch {
     return iso;
   }
 }
 
 function formatRelative(iso: string | null): string {
-  if (!iso) return "nunca";
+  if (!iso) return "从未";
   const d = new Date(iso);
   const diff = Math.floor((Date.now() - d.getTime()) / 1000);
-  if (diff < 60) return "hace unos segundos";
-  if (diff < 3600) return `hace ${Math.floor(diff / 60)} min`;
-  if (diff < 86400) return `hace ${Math.floor(diff / 3600)} h`;
-  return d.toLocaleDateString("es");
+  if (diff < 60) return "几秒前";
+  if (diff < 3600) return `${Math.floor(diff / 60)} 分钟前`;
+  if (diff < 86400) return `${Math.floor(diff / 3600)} 小时前`;
+  return d.toLocaleDateString("zh-CN");
 }
 
 export default function TicketsPage() {
@@ -113,7 +113,7 @@ export default function TicketsPage() {
       setResults(res.data.results);
     } catch (e: any) {
       setResults([]);
-      setSearchError(e?.response?.data?.detail || "Error buscando eventos");
+      setSearchError(e?.response?.data?.detail || "搜索事件失败");
     } finally {
       setSearching(false);
     }
@@ -169,10 +169,10 @@ export default function TicketsPage() {
       <div>
         <h1 className="text-2xl font-display font-bold text-charcoal-500 dark:text-warm-100 flex items-center gap-2">
           <Ticket size={24} className="text-burnt-400" />
-          Boletas
+          票务
         </h1>
         <p className="text-sm text-charcoal-300 dark:text-warm-400 mt-0.5">
-          Te avisamos cuando haya boletas disponibles para los eventos que sigas.
+          我们会在您关注的活动有票时通知您。
         </p>
       </div>
 
@@ -181,14 +181,13 @@ export default function TicketsPage() {
         <div className="flex items-start gap-3 p-4 rounded-2xl border border-sandy-200 bg-sandy-50 dark:bg-sandy-500/10 dark:border-sandy-500/30">
           <AlertTriangle size={18} className="text-sandy-600 dark:text-sandy-300 mt-0.5 shrink-0" />
           <div className="text-sm text-charcoal-600 dark:text-warm-200">
-            <p className="font-medium">Falta configurar la API key de Ticketmaster.</p>
+            <p className="font-medium">尚未配置 Ticketmaster API 密钥。</p>
             <p className="text-xs text-charcoal-400 dark:text-warm-300 mt-1">
-              Registra una app en{" "}
+              请在{" "}
               <a className="text-burnt-500 underline" href="https://developer.ticketmaster.com/" target="_blank" rel="noreferrer">
                 developer.ticketmaster.com
               </a>{" "}
-              y exporta <code className="text-[11px] bg-warm-100 dark:bg-[#2e3638] px-1 py-0.5 rounded">TICKETMASTER_API_KEY</code>{" "}
-              antes de arrancar el backend.
+              注册应用，并在启动后端之前设置环境变量 <code className="text-[11px] bg-warm-100 dark:bg-[#2e3638] px-1 py-0.5 rounded">TICKETMASTER_API_KEY</code>。
             </p>
           </div>
         </div>
@@ -200,7 +199,7 @@ export default function TicketsPage() {
         onClick={() => setShowSearch((s) => !s)}
         className="w-full py-3 rounded-2xl border-2 border-dashed border-burnt-200/60 dark:border-burnt-500/30 text-burnt-500 dark:text-burnt-300 text-sm font-medium flex items-center justify-center gap-2 hover:bg-burnt-50/40 dark:hover:bg-burnt-500/10 transition-colors"
       >
-        <Plus size={16} /> Seguir un evento
+        <Plus size={16} /> 关注活动
       </motion.button>
 
       {/* Search form */}
@@ -214,7 +213,7 @@ export default function TicketsPage() {
           >
             <div className="bg-white dark:bg-[#1e2425] rounded-3xl p-5 border border-warm-200/40 dark:border-[#2e3638] space-y-4">
               <div className="flex items-center justify-between">
-                <p className="text-sm font-semibold text-charcoal-600 dark:text-warm-100">Buscar evento</p>
+                <p className="text-sm font-semibold text-charcoal-600 dark:text-warm-100">搜索活动</p>
                 <button
                   onClick={() => { setShowSearch(false); setQuery(""); setCountry(""); setCity(""); setResults([]); setSearchError(null); setSearched(false); }}
                   className="p-1 rounded-lg text-charcoal-300 hover:bg-warm-100 dark:hover:bg-[#2e3638] transition-colors"
@@ -231,7 +230,7 @@ export default function TicketsPage() {
                     value={query}
                     onChange={(e) => setQuery(e.target.value)}
                     onKeyDown={(e) => e.key === "Enter" && runSearch()}
-                    placeholder='Ej. "BTS", "Bad Bunny"…'
+                    placeholder='例如 "周杰伦", "薛之谦"…'
                     className="w-full h-11 pl-9 pr-3 rounded-xl bg-warm-50 dark:bg-dark-input border border-warm-200 dark:border-dark-border text-sm text-charcoal-600 dark:text-warm-100 outline-none focus:border-burnt-300 focus:ring-4 focus:ring-burnt-200/40"
                   />
                 </div>
@@ -240,15 +239,15 @@ export default function TicketsPage() {
                   disabled={searching || !query.trim() || !config?.api_key_configured}
                   className="shrink-0 h-11 px-4 rounded-xl bg-gradient-to-r from-burnt-400 to-sandy-400 text-white text-sm font-semibold disabled:opacity-50"
                 >
-                  {searching ? "Buscando…" : "Buscar"}
+                  {searching ? "搜索中…" : "搜索"}
                 </button>
               </div>
 
-              {/* Filtros país + ciudad */}
+              {/* 国家 + 城市筛选 */}
               <div className="grid grid-cols-2 gap-2">
                 <div>
                   <label className="block text-[10px] font-medium uppercase tracking-wide text-charcoal-400 dark:text-warm-400 mb-1.5">
-                    País (ISO-2)
+                    国家 (ISO-2)
                   </label>
                   <input
                     type="text"
@@ -262,20 +261,20 @@ export default function TicketsPage() {
                 </div>
                 <div>
                   <label className="block text-[10px] font-medium uppercase tracking-wide text-charcoal-400 dark:text-warm-400 mb-1.5">
-                    Ciudad
+                    城市
                   </label>
                   <input
                     type="text"
                     value={city}
                     onChange={(e) => setCity(e.target.value)}
                     onKeyDown={(e) => e.key === "Enter" && runSearch()}
-                    placeholder="Bogotá, Madrid…"
+                    placeholder="北京, 上海…"
                     className="w-full h-10 px-3 rounded-xl bg-warm-50 dark:bg-dark-input border border-warm-200 dark:border-dark-border text-sm text-charcoal-600 dark:text-warm-100 outline-none focus:border-burnt-300 focus:ring-4 focus:ring-burnt-200/40"
                   />
                 </div>
               </div>
               <p className="text-[10px] text-charcoal-300 dark:text-warm-500 -mt-2">
-                Deja los filtros vacíos para buscar en todo el mundo.
+                留空筛选条件可搜索全球范围。
               </p>
 
               {searchError && (
@@ -284,7 +283,7 @@ export default function TicketsPage() {
 
               {searched && !searching && !searchError && results.length === 0 && (
                 <p className="text-xs text-charcoal-400 dark:text-warm-400 italic">
-                  Sin resultados. Prueba sin ciudad o cambia el país.
+                  没有结果，请尝试移除城市或更改国家。
                 </p>
               )}
 
@@ -327,10 +326,10 @@ export default function TicketsPage() {
             <Ticket size={36} className="text-warm-400" />
           </div>
           <p className="text-charcoal-400 dark:text-warm-400 text-sm font-medium">
-            Aún no sigues ningún evento.
+            您还没有关注任何活动。
           </p>
           <p className="text-xs text-charcoal-300 dark:text-warm-500 mt-1">
-            Agrega uno y te avisaremos cuando sus boletas estén a la venta.
+            添加活动后，我们会在开票时通知您。
           </p>
         </div>
       ) : (
@@ -379,7 +378,7 @@ export default function TicketsPage() {
                         className="inline-flex items-center gap-1 text-[11px] font-medium text-burnt-500 hover:text-burnt-600 dark:text-burnt-300 disabled:opacity-50"
                       >
                         <RefreshCw size={11} className={checking === w.id ? "animate-spin" : ""} />
-                        {checking === w.id ? "Revisando…" : "Revisar ahora"}
+                        {checking === w.id ? "检查中…" : "立即检查"}
                       </button>
                       {w.event_url && (
                         <a
@@ -388,13 +387,13 @@ export default function TicketsPage() {
                           rel="noreferrer"
                           className="inline-flex items-center gap-1 text-[11px] font-medium text-verdigris-500 hover:text-verdigris-600"
                         >
-                          <ExternalLink size={11} /> Ver en Ticketmaster
+                          <ExternalLink size={11} /> 在 Ticketmaster 查看
                         </a>
                       )}
                       <button
                         onClick={() => removeWatch(w.id)}
                         className="ml-auto p-1 rounded-lg text-charcoal-300 hover:text-burnt-500 hover:bg-burnt-50 dark:hover:bg-burnt-500/10 transition-colors"
-                        aria-label="Eliminar"
+                        aria-label="删除"
                       >
                         <Trash2 size={13} />
                       </button>
@@ -405,8 +404,8 @@ export default function TicketsPage() {
                 {(w.last_checked || w.last_error) && (
                   <div className="px-4 py-2 bg-warm-50/60 dark:bg-[#1a2022] border-t border-warm-200/40 dark:border-[#2e3638] flex items-center justify-between text-[10px]">
                     <span className="text-charcoal-400 dark:text-warm-400">
-                      Última revisión: {formatRelative(w.last_checked)}
-                      {w.check_count > 0 && ` · ${w.check_count} chequeos`}
+                      最后检查：{formatRelative(w.last_checked)}
+                      {w.check_count > 0 && ` · ${w.check_count} 次检查`}
                     </span>
                     {w.last_error && (
                       <span className="text-burnt-500 dark:text-burnt-300 truncate max-w-[60%]" title={w.last_error}>
@@ -424,7 +423,7 @@ export default function TicketsPage() {
       {/* Info footer */}
       {config?.api_key_configured && (
         <p className="text-[11px] text-charcoal-300 dark:text-warm-500 text-center">
-          Revisando cada {Math.round(config.poll_seconds / 60)} min en segundo plano.
+          每 {Math.round(config.poll_seconds / 60)} 分钟后台检查一次。
         </p>
       )}
     </motion.div>

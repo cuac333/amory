@@ -447,7 +447,7 @@ export default function LoveJarGame() {
                         <div className="flex items-center gap-2 mt-2">
                           <CatIcon size={9} className={catConfig.text} fill="currentColor" />
                           <span className="text-[10px] text-charcoal-300 dark:text-[#6e6862] font-medium">
-                            {reason.is_preset ? "✨ Preset" : (reason.author_id === user?.id ? t("jar.you") : t("jar.partner"))}
+                            {reason.is_preset ? "✨ 预设" : (reason.author_id === user?.id ? t("jar.you") : t("jar.partner"))}
                           </span>
                         </div>
                       </div>

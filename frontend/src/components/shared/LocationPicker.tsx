@@ -57,7 +57,7 @@ export default function LocationPicker({ latitude, longitude, placeName, onLocat
     // Reverse geocode
     try {
       const res = await fetch(
-        `https://nominatim.openstreetmap.org/reverse?lat=${lat}&lon=${lng}&format=json&accept-language=es`
+        `https://nominatim.openstreetmap.org/reverse?lat=${lat}&lon=${lng}&format=json&accept-language=zh`
       );
       const data = await res.json();
       const name = data.display_name?.split(",").slice(0, 3).join(",") || `${lat.toFixed(4)}, ${lng.toFixed(4)}`;
@@ -75,7 +75,7 @@ export default function LocationPicker({ latitude, longitude, placeName, onLocat
     setSearching(true);
     try {
       const res = await fetch(
-        `https://nominatim.openstreetmap.org/search?q=${encodeURIComponent(query)}&format=json&limit=5&accept-language=es`
+        `https://nominatim.openstreetmap.org/search?q=${encodeURIComponent(query)}&format=json&limit=5&accept-language=zh`
       );
       const data = await res.json();
       setSuggestions(data);
@@ -107,7 +107,7 @@ export default function LocationPicker({ latitude, longitude, placeName, onLocat
           <input
             value={search}
             onChange={(e) => handleSearchInput(e.target.value)}
-            placeholder="Buscar lugar..."
+            placeholder="搜索地点..."
             className="flex-1 bg-transparent text-sm outline-none text-charcoal-600 placeholder:text-warm-400"
           />
           {search && (
@@ -157,13 +157,13 @@ export default function LocationPicker({ latitude, longitude, placeName, onLocat
       {latitude && (
         <p className="text-[10px] text-warm-400 flex items-center gap-1">
           <MapPin size={10} className="text-burnt-300" />
-          Toca el mapa para cambiar la ubicación
+          点击地图更改位置
         </p>
       )}
       {!latitude && (
         <p className="text-[10px] text-warm-400 flex items-center gap-1">
           <MapPin size={10} />
-          Busca o toca el mapa para seleccionar ubicación
+          搜索或点击地图选择位置
         </p>
       )}
     </div>

@@ -1,11 +1,13 @@
 import es from "./es";
 import en from "./en";
+import zh from "./zh";
 
-export type Locale = "es" | "en";
+export type Locale = "es" | "en" | "zh";
 
-const translations: Record<Locale, Record<string, string>> = { es, en };
+const translations: Record<Locale, Record<string, string>> = { es, en, zh };
 
 export const LOCALES: { key: Locale; label: string; flag: string }[] = [
+  { key: "zh", label: "中文", flag: "🇨🇳" },
   { key: "es", label: "Espanol", flag: "🇪🇸" },
   { key: "en", label: "English", flag: "🇺🇸" },
 ];

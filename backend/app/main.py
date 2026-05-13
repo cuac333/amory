@@ -7,7 +7,7 @@ from app.routes import auth, book, secret, monthly, outings, wishlist, diary, ex
 
 app = FastAPI(
     title="Amory API",
-    description="API para la app de aniversario - Libro virtual de pareja",
+    description="情侣纪念日应用 API - 虚拟回忆录",
     version="1.0.0",
 )
 
@@ -51,4 +51,4 @@ def on_startup():
 
 @app.get("/")
 def root():
-    return {"message": "Amory API - Feliz Aniversario! 💕"}
+    return {"message": "Amory API - 周年快乐！💕"}

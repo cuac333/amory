@@ -39,7 +39,7 @@ router = APIRouter(tags=["extras"])
 
 def require_couple(user: User):
     if not user.couple_id:
-        raise HTTPException(status_code=400, detail="Debes pertenecer a una pareja")
+        raise HTTPException(status_code=400, detail="你需要属于一个情侣")
     return user.couple_id
 
 
@@ -74,7 +74,7 @@ def get_love_counter(user: User = Depends(get_current_user), session: Session = 
     couple_id = require_couple(user)
     couple = session.get(Couple, couple_id)
     if not couple:
-        raise HTTPException(status_code=404, detail="Pareja no encontrada")
+        raise HTTPException(status_code=404, detail="情侣未找到")
 
     now = datetime.utcnow()
     delta = now - couple.anniversary_date
@@ -202,7 +202,7 @@ def seed_quiz_category(
         )
     ).first()
     if existing:
-        return {"seeded": False, "message": "Ya se cargaron las preguntas"}
+        return {"seeded": False, "message": "题目已全部加载"}
 
     from app.data.quiz_questions import QUIZ_QUESTIONS
     questions = QUIZ_QUESTIONS.get(category, [])
@@ -227,13 +227,13 @@ def answer_quiz(question_id: int, data: QuizAnswerCreate, user: User = Depends(g
     require_couple(user)
     question = session.get(QuizQuestion, question_id)
     if not question:
-        raise HTTPException(status_code=404, detail="Pregunta no encontrada")
+        raise HTTPException(status_code=404, detail="问题未找到")
 
     existing = session.exec(
         select(QuizAnswer).where(QuizAnswer.question_id == question_id, QuizAnswer.user_id == user.id)
     ).first()
     if existing:
-        raise HTTPException(status_code=400, detail="Ya respondiste esta pregunta")
+        raise HTTPException(status_code=400, detail="你已经回答过这个问题")
 
     answer = QuizAnswer(question_id=question_id, user_id=user.id, answer=data.answer)
     session.add(answer)
@@ -282,7 +282,7 @@ def upload_pin_photo(pin_id: int, file: UploadFile = File(...), user: User = Dep
     couple_id = require_couple(user)
     pin = session.get(MemoryPin, pin_id)
     if not pin or pin.couple_id != couple_id:
-        raise HTTPException(status_code=404, detail="Pin no encontrado")
+        raise HTTPException(status_code=404, detail="标记点未找到")
 
     UPLOADS_IMAGES_DIR.mkdir(parents=True, exist_ok=True)
     filename = f"pin_{pin_id}_{file.filename}"
@@ -301,7 +301,7 @@ def delete_pin(pin_id: int, user: User = Depends(get_current_user), session: Ses
     couple_id = require_couple(user)
     pin = session.get(MemoryPin, pin_id)
     if not pin or pin.couple_id != couple_id:
-        raise HTTPException(status_code=404, detail="Pin no encontrado")
+        raise HTTPException(status_code=404, detail="标记点未找到")
     session.delete(pin)
     session.commit()
     return {"ok": True}
@@ -313,7 +313,7 @@ def delete_pin(pin_id: int, user: User = Depends(get_current_user), session: Ses
 def get_book_clues(user: User = Depends(get_current_user), session: Session = Depends(get_session)):
     couple_id = require_couple(user)
     if user.role != "partner_1":
-        raise HTTPException(status_code=403, detail="Solo el creador puede ver las pistas")
+        raise HTTPException(status_code=403, detail="只有创建者可以查看线索")
     clues = session.exec(
         select(BookClue).where(BookClue.couple_id == couple_id)
         .order_by(BookClue.order)
@@ -341,13 +341,13 @@ def get_clue_for_section(section: str, user: User = Depends(get_current_user), s
 def create_book_clue(data: BookClueCreate, user: User = Depends(get_current_user), session: Session = Depends(get_session)):
     couple_id = require_couple(user)
     if user.role != "partner_1":
-        raise HTTPException(status_code=403, detail="Solo el creador puede gestionar las pistas")
+        raise HTTPException(status_code=403, detail="只有创建者可以管理线索")
     # Check if section already has a clue
     existing = session.exec(
         select(BookClue).where(BookClue.couple_id == couple_id, BookClue.section == data.section)
     ).first()
     if existing:
-        raise HTTPException(status_code=400, detail="Ya existe una pista en esta seccion")
+        raise HTTPException(status_code=400, detail="该章节已有线索")
     clue = BookClue(couple_id=couple_id, created_by=user.id, **data.model_dump())
     session.add(clue)
     session.commit()
@@ -363,10 +363,10 @@ def create_book_clue(data: BookClueCreate, user: User = Depends(get_current_user
 def update_book_clue(clue_id: int, data: BookClueUpdate, user: User = Depends(get_current_user), session: Session = Depends(get_session)):
     couple_id = require_couple(user)
     if user.role != "partner_1":
-        raise HTTPException(status_code=403, detail="Solo el creador puede gestionar las pistas")
+        raise HTTPException(status_code=403, detail="只有创建者可以管理线索")
     clue = session.get(BookClue, clue_id)
     if not clue or clue.couple_id != couple_id:
-        raise HTTPException(status_code=404, detail="Pista no encontrada")
+        raise HTTPException(status_code=404, detail="线索未找到")
     if data.section is not None:
         clue.section = data.section
     if data.hint_text is not None:
@@ -389,10 +389,10 @@ def update_book_clue(clue_id: int, data: BookClueUpdate, user: User = Depends(ge
 def delete_book_clue(clue_id: int, user: User = Depends(get_current_user), session: Session = Depends(get_session)):
     couple_id = require_couple(user)
     if user.role != "partner_1":
-        raise HTTPException(status_code=403, detail="Solo el creador puede gestionar las pistas")
+        raise HTTPException(status_code=403, detail="只有创建者可以管理线索")
     clue = session.get(BookClue, clue_id)
     if not clue or clue.couple_id != couple_id:
-        raise HTTPException(status_code=404, detail="Pista no encontrada")
+        raise HTTPException(status_code=404, detail="线索未找到")
     session.delete(clue)
     session.commit()
     return {"ok": True}
@@ -406,7 +406,7 @@ def _get_partner_id(user: User, session: Session) -> int:
         select(User).where(User.couple_id == user.couple_id, User.id != user.id)
     ).first()
     if not partner:
-        raise HTTPException(status_code=400, detail="Pareja incompleta")
+        raise HTTPException(status_code=400, detail="情侣不完整")
     return partner.id
 
 
@@ -452,11 +452,11 @@ def scratch_card(card_id: int, user: User = Depends(get_current_user), session: 
     couple_id = require_couple(user)
     card = session.get(ScratchCard, card_id)
     if not card or card.couple_id != couple_id:
-        raise HTTPException(status_code=404, detail="Tarjeta no encontrada")
+        raise HTTPException(status_code=404, detail="刮刮卡未找到")
     if card.scratched_by:
-        raise HTTPException(status_code=400, detail="Esta tarjeta ya fue raspada")
+        raise HTTPException(status_code=400, detail="这张刮刮卡已被刮开")
     if card.for_user_id and card.for_user_id != user.id:
-        raise HTTPException(status_code=403, detail="Esta tarjeta es para tu pareja")
+        raise HTTPException(status_code=403, detail="这张刮刮卡是给你伴侣的")
     card.scratched_by = user.id
     card.scratched_at = datetime.utcnow()
     session.add(card)
@@ -470,9 +470,9 @@ def delete_scratch_card(card_id: int, user: User = Depends(get_current_user), se
     couple_id = require_couple(user)
     card = session.get(ScratchCard, card_id)
     if not card or card.couple_id != couple_id:
-        raise HTTPException(status_code=404, detail="Tarjeta no encontrada")
+        raise HTTPException(status_code=404, detail="刮刮卡未找到")
     if card.created_by and card.created_by != user.id:
-        raise HTTPException(status_code=403, detail="Solo el creador puede eliminar esta tarjeta")
+        raise HTTPException(status_code=403, detail="只有创建者可以删除此刮刮卡")
     session.delete(card)
     session.commit()
     return {"ok": True}
@@ -511,7 +511,7 @@ def create_voucher(data: VoucherCreate, user: User = Depends(get_current_user), 
     session.add(voucher)
     session.commit()
     session.refresh(voucher)
-    send_push_to_partner(user, "Nuevo vale!", f"{user.name} te creo un vale: {data.title}", "/more", session)
+    send_push_to_partner(user, "新兑换券！", f"{user.name}给你创建了一张兑换券: {data.title}", "/more", session)
     try:
         award_xp(couple_id, user.id, "voucher_created", 10, session)
     except Exception:
@@ -524,17 +524,17 @@ def redeem_voucher(voucher_id: int, user: User = Depends(get_current_user), sess
     couple_id = require_couple(user)
     voucher = session.get(Voucher, voucher_id)
     if not voucher or voucher.couple_id != couple_id:
-        raise HTTPException(status_code=404, detail="Vale no encontrado")
+        raise HTTPException(status_code=404, detail="兑换券未找到")
     if voucher.redeemed_by:
-        raise HTTPException(status_code=400, detail="Este vale ya fue redimido")
+        raise HTTPException(status_code=400, detail="此兑换券已被兑换")
     if voucher.for_user_id and voucher.for_user_id != user.id:
-        raise HTTPException(status_code=403, detail="Este vale es para tu pareja")
+        raise HTTPException(status_code=403, detail="此兑换券是给你伴侣的")
     voucher.redeemed_by = user.id
     voucher.redeemed_at = datetime.utcnow()
     session.add(voucher)
     session.commit()
     session.refresh(voucher)
-    send_push_to_partner(user, "Vale canjeado!", f"{user.name} canjeo el vale: {voucher.title}", "/more", session)
+    send_push_to_partner(user, "兑换券已兑换！", f"{user.name}兑换了兑换券: {voucher.title}", "/more", session)
     try:
         award_xp(couple_id, user.id, "voucher_redeemed", 5, session)
     except Exception:
@@ -547,9 +547,9 @@ def delete_voucher(voucher_id: int, user: User = Depends(get_current_user), sess
     couple_id = require_couple(user)
     voucher = session.get(Voucher, voucher_id)
     if not voucher or voucher.couple_id != couple_id:
-        raise HTTPException(status_code=404, detail="Vale no encontrado")
+        raise HTTPException(status_code=404, detail="兑换券未找到")
     if voucher.created_by and voucher.created_by != user.id:
-        raise HTTPException(status_code=403, detail="Solo el creador puede eliminar este vale")
+        raise HTTPException(status_code=403, detail="只有创建者可以删除此兑换券")
     session.delete(voucher)
     session.commit()
     return {"ok": True}
@@ -571,7 +571,7 @@ def get_truth_or_dare(user: User = Depends(get_current_user), session: Session =
 def create_truth_or_dare(data: TruthOrDareCreate, user: User = Depends(get_current_user), session: Session = Depends(get_session)):
     couple_id = require_couple(user)
     if user.role != "partner_1":
-        raise HTTPException(status_code=403, detail="Solo el creador puede agregar cartas")
+        raise HTTPException(status_code=403, detail="只有创建者可以添加卡片")
     card = TruthOrDare(couple_id=couple_id, **data.model_dump(), is_preset=False, created_by=user.id)
     session.add(card)
     session.commit()
@@ -588,142 +588,142 @@ def seed_truth_or_dare(user: User = Depends(get_current_user), session: Session 
     ).all()
     existing_texts = {c.text for c in existing_presets}
 
-    # ── Normal (amigos / casual) ──
+    # ── 普通（朋友/休闲） ──
     normal_truths = [
-        "¿Cual fue tu primera impresion de mi?",
-        "¿Que es lo que mas te gusta de nuestra relacion?",
-        "¿Cual es tu recuerdo favorito juntos?",
-        "¿Hay algo que siempre quisiste decirme?",
-        "¿Que es lo mas vergonzoso que has hecho por amor?",
-        "¿Que cancion te recuerda a mi?",
-        "¿Que es lo primero que notaste de mi?",
-        "¿Cual fue el momento en que supiste que me amabas?",
-        "¿Que es lo que mas extranas cuando no estamos juntos?",
-        "¿Cual es tu mayor miedo en la vida?",
-        "¿Que es lo mas loco que has hecho?",
-        "¿Cual es tu sueno mas raro?",
-        "¿Que es lo que mas te da pena admitir?",
-        "¿Cual es tu pelicula culposa favorita?",
-        "¿Que comida podrias comer todos los dias?",
-        "¿Cual es tu talento secreto?",
-        "¿Que harias si ganaras la loteria?",
-        "¿Cual es la mentira mas grande que has dicho?",
-        "¿Que app de tu celular te da mas pena?",
-        "¿Cual es tu peor habito?",
+        "你对我的第一印象是什么？",
+        "你最喜欢我们关系的哪一点？",
+        "你最美好的共同回忆是什么？",
+        "有没有什么你一直想对我说的？",
+        "你为爱做过的最尴尬的事是什么？",
+        "哪首歌让你想起我？",
+        "你最先注意到我的是什么？",
+        "你是从什么时候确定你爱我的？",
+        "不在一起的时候你最想念什么？",
+        "你人生中最大的恐惧是什么？",
+        "你做过的最疯狂的事是什么？",
+        "你做过的最奇怪的梦是什么？",
+        "你最不好意思承认的是什么？",
+        '你最喜欢的"罪恶快感"电影是哪部？',
+        "什么食物你可以每天都吃？",
+        "你的秘密才艺是什么？",
+        "如果你中了彩票你会做什么？",
+        "你说过的最大的谎是什么？",
+        "你手机里最让你尴尬的App是什么？",
+        "你最坏的习惯是什么？",
     ]
     normal_dares = [
-        "Escribe un poema de amor en 1 minuto",
-        "Baila una cancion romantica juntos",
-        "Dile 5 cosas que amas de el/ella sin parar",
-        "Imita como se conocieron",
-        "Dedícale una cancion en voz alta",
-        "Abrazate a tu pareja por 30 segundos sin soltarse",
-        "Dile algo que nunca le has dicho",
-        "Prepara algo de comer/beber para tu pareja",
-        "Haz tu mejor imitacion de tu pareja",
-        "Cuenta un chiste hasta que tu pareja se ria",
-        "Llama a un amigo y dile que lo quieres",
-        "Publica una historia con tu pareja ahora",
-        "Dejale un audio cursi a tu pareja",
-        "Baila sin musica por 30 segundos",
-        "Deja que tu pareja te maquille los labios",
-        "Haz 10 sentadillas mientras dices algo romantico",
-        "Intenta hacer malabares con 3 cosas",
-        "Canta el coro de una cancion a todo pulmon",
-        "Deja que tu pareja publique algo en tus redes",
-        "Actua una escena de tu pelicula favorita",
+        "在1分钟内写一首情诗",
+        "一起跳一支浪漫的舞",
+        "不停地说出5件你爱对方的事",
+        "模仿你们认识的经过",
+        "大声地为对方唱一首歌",
+        "拥抱对方30秒不松手",
+        "告诉对方一件你从未说过的事",
+        "为对方准备一些吃的/喝的",
+        "模仿你的伴侣",
+        "讲笑话直到对方笑为止",
+        "打电话给一个朋友说你爱他",
+        "现在就在社交媒体发一条和对方的故事",
+        "给对方发一段肉麻的语音",
+        "无音乐跳舞30秒",
+        "让对方给你涂口红",
+        "做10个深蹲同时说浪漫的话",
+        "尝试用3样东西杂耍",
+        "大声唱出一首歌的副歌",
+        "让对方在你的社交媒体上发点东西",
+        "表演你最喜欢的电影场景",
     ]
 
-    # ── Novios (romantico/picante) ──
+    # ── 情侣（浪漫/刺激） ──
     couples_truths = [
-        "¿Cual es tu fantasia secreta conmigo?",
-        "¿Que parte de mi cuerpo te parece mas atractiva?",
-        "¿Cual ha sido tu mejor beso?",
-        "¿Que te pone nervioso/a de mi?",
-        "¿Cuando fue la primera vez que quisiste besarme?",
-        "¿Que es lo mas atrevido que has pensado sobre mi?",
-        "¿Te gusta mas ser dominante o sumiso/a?",
-        "¿Cual es tu lugar favorito para besarnos?",
-        "¿Que ropa mia te parece mas sexy?",
-        "¿Que hago que te derrita?",
-        "¿Has tenido un sueno romantico conmigo? Cuentalo",
-        "¿Que es lo que mas te prende de mi?",
-        "¿Cual ha sido la cita mas romantica que hemos tenido?",
-        "¿Que quisieras que hicieramos mas seguido como pareja?",
-        "¿Donde te gustaria que te besara mas?",
-        "¿Te gusta que te hablen al oido?",
-        "¿Que es lo mas intenso que has sentido conmigo?",
-        "¿Prefieres caricias lentas o besos apasionados?",
-        "¿Que momento intimo te gustaria repetir?",
-        "¿Que te excita que haga sin que me de cuenta?",
+        "你对我有什么秘密幻想？",
+        "你觉得我身体哪部分最吸引你？",
+        "你最好的一次接吻是什么时候？",
+        "我做什么会让你紧张？",
+        "你第一次想吻我是什么时候？",
+        "你对我想过的最大胆的事是什么？",
+        "你喜欢主导还是被动？",
+        "你最喜欢在哪里接吻？",
+        "你觉得我穿什么最性感？",
+        "我做什么会让你融化？",
+        "你有没有做过关于我的浪漫的梦？说说看",
+        "我身上最让你兴奋的是什么？",
+        "我们最浪漫的一次约会是什么？",
+        "你希望我们作为情侣多做什么？",
+        "你希望我吻你哪里更多？",
+        "你喜欢耳边低语吗？",
+        "和我在一起你感受过的最强烈的时刻是什么？",
+        "你喜欢慢抚还是热吻？",
+        "你想重复哪一次亲密时刻？",
+        "我做什么让你兴奋但我没注意到？",
     ]
     couples_dares = [
-        "Dale un beso de pelicula a tu pareja",
-        "Hazle un masaje de 2 minutos en el cuello",
-        "Besa a tu pareja en un lugar que no sea la boca",
-        "Susurrale algo sexy al oido",
-        "Abrazala/o por detras y dale un beso en el cuello",
-        "Mirate a los ojos 60 segundos sin hablar",
-        "Dale un beso en la frente lo mas tierno posible",
-        "Acariciale el pelo mientras le dices algo bonito",
-        "Mordele suavemente el labio inferior",
-        "Dale un beso en cada dedo de la mano",
-        "Hazle un striptease de solo una prenda",
-        "Bailale sensualmente una cancion",
-        "Dale un beso de esquimal (nariz con nariz)",
-        "Hazle un masaje en los pies por 2 minutos",
-        "Cargala/o en brazos y dale una vuelta",
-        "Dile al oido 3 cosas que quieres hacerle",
-        "Recorre su rostro con besos suaves",
-        "Abrazalo/a y no lo sueltes hasta que el/ella diga basta",
-        "Acariciale la espalda bajo la ropa",
-        "Dale un beso largo y lento",
+        "给对方一个电影般的吻",
+        "给对方按摩脖子2分钟",
+        "吻对方一个不是嘴唇的地方",
+        "在耳边说一些性感的话",
+        "从背后拥抱对方并亲吻脖子",
+        "对视60秒不说话",
+        "尽可能温柔地亲吻对方的额头",
+        "抚摸对方的头发同时说甜蜜的话",
+        "轻轻咬对方的下唇",
+        "亲吻对方的每一根手指",
+        "只脱一件衣服给对方看",
+        "性感地为对方跳一支舞",
+        "给对方一个爱斯基摩吻（鼻子碰鼻子）",
+        "给对方按摩脚2分钟",
+        "抱起对方转一圈",
+        "在耳边说出3件你想对对方做的事",
+        "用轻吻扫过对方的脸",
+        "拥抱对方直到对方说够了",
+        "在衣服下面抚摸对方的背",
+        "给对方一个长长的慢吻",
     ]
 
-    # ── Hot (sexual/explicito) ──
+    # ── 火辣（亲密/大胆） ──
     hot_truths = [
-        "¿Cual es tu mayor fantasia sexual?",
-        "¿Que posicion es tu favorita?",
-        "¿Donde es el lugar mas arriesgado donde te gustaria hacerlo?",
-        "¿Que es lo mas atrevido que has hecho en la intimidad?",
-        "¿Tienes algun fetiche que no me has contado?",
-        "¿Que parte de tu cuerpo es la mas sensible?",
-        "¿Prefieres hacerlo con la luz prendida o apagada?",
-        "¿Te gusta que te hablen sucio?",
-        "¿Cual ha sido tu mejor orgasmo?",
-        "¿Que juguete sexual te gustaria probar?",
-        "¿Te excita hacerlo en lugares publicos?",
-        "¿Prefieres rapido e intenso o lento y sensual?",
-        "¿Has fingido algun orgasmo?",
-        "¿Que tan seguido piensas en sexo conmigo?",
-        "¿Que es lo mas arriesgado que harias sexualmente?",
-        "¿Te gustaria grabar un video intimo?",
-        "¿Prefieres hacerlo en la manana o en la noche?",
-        "¿Que tipo de lenceria te prende mas?",
-        "¿Te gusta el sexo oral?",
-        "¿Cual es tu mayor turn on?",
+        "你最大的性幻想是什么？",
+        "你最喜欢的体位是什么？",
+        "你想在最冒险的地方做是什么地方？",
+        "你在亲密时做过的最大胆的事是什么？",
+        "你有什么没告诉我的癖好吗？",
+        "你身体最敏感的部位是哪里？",
+        "你喜欢开灯还是关灯做？",
+        "你喜欢听dirty talk吗？",
+        "你最好的一次高潮是什么时候？",
+        "你想尝试什么情趣用品？",
+        "在公共场所做会让你兴奋吗？",
+        "你喜欢快速激烈还是缓慢温柔？",
+        "你假装过高潮吗？",
+        "你多久想和我做一次？",
+        "你在性方面最大胆愿意做什么？",
+        "你想拍亲密视频吗？",
+        "你喜欢早上做还是晚上做？",
+        "什么类型的内衣最让你兴奋？",
+        "你喜欢口吗？",
+        "你最大的兴奋点是什么？",
     ]
     hot_dares = [
-        "Dale un beso en el cuello durante 30 segundos",
-        "Quitale una prenda de ropa a tu pareja con los dientes",
-        "Hazle un lap dance a tu pareja",
-        "Susurrale tu fantasia mas atrevida al oido",
-        "Besa a tu pareja de la forma mas apasionada posible",
-        "Dale un masaje sensual con aceite",
-        "Demuestrale lo que te gustaria que te hiciera",
-        "Haz un striptease completo para tu pareja",
-        "Vendales los ojos y besala/o por todo el cuerpo",
-        "Muerdele suavemente donde mas le guste",
-        "Mandale un mensaje describiendo lo que quieres hacerle",
-        "Recrear la escena mas hot de una pelicula",
-        "Dale un beso donde tu pareja elija",
-        "Dejate tocar por tu pareja donde el/ella quiera",
-        "Hazle una pregunta sexual y responde tu tambien",
-        "Acaricialo/a por debajo de la ropa por 1 minuto",
-        "Dile exactamente que quieres que te haga ahora",
-        "Ponte encima de tu pareja y besala/o apasionadamente",
-        "Jueguen piedra papel o tijera: el que pierda se quita una prenda",
-        "Dale un beso en su zona mas sensible",
+        "亲吻对方的脖子30秒",
+        "用牙齿脱掉对方一件衣服",
+        "给对方跳一段膝上舞",
+        "在耳边说出你最大胆的幻想",
+        "用最热烈的方式亲吻对方",
+        "用精油给对方做一次性感按摩",
+        "展示你希望对方对你做的事",
+        "为对方跳一段完整的脱衣舞",
+        "蒙住对方的眼睛亲吻全身",
+        "轻轻咬对方最喜欢的地方",
+        "发一条消息描述你想对对方做的事",
+        "重现一部电影中最火辣的场景",
+        "在对方选择的地方亲吻",
+        "让对方在想碰的地方碰你",
+        "问一个性相关的问题并自己也回答",
+        "在衣服下面抚摸对方1分钟",
+        "告诉对方你现在想让对方做什么",
+        "骑在对方身上热烈地亲吻",
+        "石头剪刀布：输了的人脱一件衣服",
+        "亲吻对方最敏感的地方",
     ]
 
     all_cards = []
@@ -757,12 +757,12 @@ def seed_truth_or_dare(user: User = Depends(get_current_user), session: Session 
 def delete_truth_or_dare(card_id: int, user: User = Depends(get_current_user), session: Session = Depends(get_session)):
     couple_id = require_couple(user)
     if user.role != "partner_1":
-        raise HTTPException(status_code=403, detail="Solo el creador puede eliminar cartas")
+        raise HTTPException(status_code=403, detail="只有创建者可以删除卡片")
     card = session.get(TruthOrDare, card_id)
     if not card or card.couple_id != couple_id:
-        raise HTTPException(status_code=404, detail="Carta no encontrada")
+        raise HTTPException(status_code=404, detail="信件未找到")
     if card.is_preset:
-        raise HTTPException(status_code=400, detail="No se pueden eliminar cartas predeterminadas")
+        raise HTTPException(status_code=400, detail="无法删除预设卡片")
     session.delete(card)
     session.commit()
     return {"ok": True}
@@ -784,7 +784,7 @@ def get_spinner_options(user: User = Depends(get_current_user), session: Session
 def create_spinner_option(data: SpinnerOptionCreate, user: User = Depends(get_current_user), session: Session = Depends(get_session)):
     couple_id = require_couple(user)
     if user.role != "partner_1":
-        raise HTTPException(status_code=403, detail="Solo el creador puede agregar opciones")
+        raise HTTPException(status_code=403, detail="只有创建者可以添加选项")
     option = SpinnerOption(couple_id=couple_id, created_by=user.id, **data.model_dump())
     session.add(option)
     session.commit()
@@ -796,10 +796,10 @@ def create_spinner_option(data: SpinnerOptionCreate, user: User = Depends(get_cu
 def delete_spinner_option(option_id: int, user: User = Depends(get_current_user), session: Session = Depends(get_session)):
     couple_id = require_couple(user)
     if user.role != "partner_1":
-        raise HTTPException(status_code=403, detail="Solo el creador puede eliminar opciones")
+        raise HTTPException(status_code=403, detail="只有创建者可以删除选项")
     option = session.get(SpinnerOption, option_id)
     if not option or option.couple_id != couple_id:
-        raise HTTPException(status_code=404, detail="Opcion no encontrada")
+        raise HTTPException(status_code=404, detail="选项未找到")
     session.delete(option)
     session.commit()
     return {"ok": True}
@@ -812,16 +812,16 @@ def seed_spinner_options(user: User = Depends(get_current_user), session: Sessio
         select(SpinnerOption).where(SpinnerOption.couple_id == couple_id)
     ).first()
     if existing:
-        return {"seeded": False, "message": "Ya existen opciones"}
+        return {"seeded": False, "message": "选项已存在"}
 
     defaults = [
-        "Ver una pelicula", "Cocinar juntos", "Salir a caminar",
-        "Noche de juegos", "Ir por helado", "Sesion de fotos",
-        "Picnic en el parque", "Noche de karaoke",
-        "Cena romantica en casa", "Tarde de spa juntos",
-        "Hacer postres", "Ver el atardecer",
-        "Noche de pizza casera", "Bailar en la sala",
-        "Maraton de series", "Paseo en bicicleta",
+        "看电影", "一起做饭", "出去散步",
+        "游戏之夜", "去买冰淇淋", "拍照",
+        "公园野餐", "卡拉OK之夜",
+        "在家吃浪漫晚餐", "一起做SPA",
+        "做甜点", "看日落",
+        "自制披萨之夜", "在客厅跳舞",
+        "追剧马拉松", "骑自行车",
     ]
     count = 0
     for text in defaults:
@@ -871,12 +871,12 @@ def open_secret_letter(letter_id: int, user: User = Depends(get_current_user), s
     couple_id = require_couple(user)
     letter = session.get(SecretLetterGame, letter_id)
     if not letter or letter.couple_id != couple_id:
-        raise HTTPException(status_code=404, detail="Carta no encontrada")
+        raise HTTPException(status_code=404, detail="信件未找到")
     now = datetime.utcnow()
     if now < letter.opens_at:
-        raise HTTPException(status_code=400, detail="Esta carta aun no se puede abrir")
+        raise HTTPException(status_code=400, detail="此信件还不能打开")
     if letter.opened_by:
-        raise HTTPException(status_code=400, detail="Esta carta ya fue abierta")
+        raise HTTPException(status_code=400, detail="此信件已被打开")
     letter.opened_by = user.id
     letter.opened_at = now
     session.add(letter)
@@ -890,9 +890,9 @@ def delete_secret_letter(letter_id: int, user: User = Depends(get_current_user),
     couple_id = require_couple(user)
     letter = session.get(SecretLetterGame, letter_id)
     if not letter or letter.couple_id != couple_id:
-        raise HTTPException(status_code=404, detail="Carta no encontrada")
+        raise HTTPException(status_code=404, detail="信件未找到")
     if letter.author_id != user.id:
-        raise HTTPException(status_code=403, detail="Solo el autor puede eliminar esta carta")
+        raise HTTPException(status_code=403, detail="只有作者可以删除此信件")
     session.delete(letter)
     session.commit()
     return {"ok": True}
@@ -901,106 +901,106 @@ def delete_secret_letter(letter_id: int, user: User = Depends(get_current_user),
 # --- Love Reasons (Jar) ---
 
 _100_REASONS = [
-    "Porque tu sonrisa ilumina mi dia",
-    "Porque me haces reir cuando mas lo necesito",
-    "Porque me abrazas como si el mundo no existiera",
-    "Porque siempre crees en mi",
-    "Porque me haces sentir la persona mas especial",
-    "Porque tu voz me calma en los peores momentos",
-    "Porque cocinas con amor",
-    "Porque me cuidas cuando estoy enfermo/a",
-    "Porque bailas conmigo aunque no haya musica",
-    "Porque me das besos inesperados",
-    "Porque me escuchas sin juzgarme",
-    "Porque me motivas a ser mejor persona",
-    "Porque haces que los dias grises tengan color",
-    "Porque tu risa es mi sonido favorito",
-    "Porque me tomas de la mano sin que te lo pida",
-    "Porque me miras como si fuera lo mas bonito del mundo",
-    "Porque siempre tienes las palabras exactas",
-    "Porque me apoyas en mis locuras",
-    "Porque haces que todo valga la pena",
-    "Porque me mandas mensajes bonitos cuando menos lo espero",
-    "Porque te preocupas por mi bienestar",
-    "Porque eres mi mejor amigo/a",
-    "Porque me haces sentir seguro/a",
-    "Porque me perdonas cuando me equivoco",
-    "Porque me enseñas algo nuevo cada dia",
-    "Porque tu paciencia es infinita conmigo",
-    "Porque celebras mis logros como si fueran tuyos",
-    "Porque me das espacio cuando lo necesito",
-    "Porque siempre recuerdas los pequeños detalles",
-    "Porque me preparas mi cafe como me gusta",
-    "Porque me haces sentir que puedo con todo",
-    "Porque tu abrazo es mi lugar favorito",
-    "Porque eres honesto/a conmigo siempre",
-    "Porque me sorprendes cuando menos lo espero",
-    "Porque te ries de mis chistes malos",
-    "Porque me acompañas en mis aventuras",
-    "Porque me dejas ser yo mismo/a",
-    "Porque compartimos silencios comodos",
-    "Porque me miras a los ojos cuando me hablas",
-    "Porque tu corazon es enorme",
-    "Porque me haces sentir en casa sin importar donde estemos",
-    "Porque eres mi compañero/a de vida ideal",
-    "Porque me regalas tu tiempo que es lo mas valioso",
-    "Porque me defiendes cuando no estoy presente",
-    "Porque eres valiente por los dos",
-    "Porque me inspiras cada dia",
-    "Porque tu bondad no tiene limites",
-    "Porque me haces querer ser mejor para ti",
-    "Porque dormirme a tu lado es mi momento favorito",
-    "Porque despertar contigo es el mejor inicio",
-    "Porque tu olor me reconforta",
-    "Porque sabes exactamente que necesito",
-    "Porque me consientes sin razon",
-    "Porque peleas por lo nuestro",
-    "Porque me haces sentir mariposas despues de tanto tiempo",
-    "Porque eres increiblemente inteligente",
-    "Porque tu creatividad me fascina",
-    "Porque me haces comidas sorpresa",
-    "Porque cantas aunque desafines y me encanta",
-    "Porque me mandas memes que solo yo entiendo",
-    "Porque compartimos los mismos sueños",
-    "Porque me das la razon incluso cuando no la tengo",
-    "Porque eres mi fan numero uno",
-    "Porque me rascas la espalda cuando me pica",
-    "Porque me cuidas como nadie mas lo haria",
-    "Porque eres mi persona favorita en el mundo",
-    "Porque haces que los problemas se sientan pequeños",
-    "Porque me dices que me amo justo cuando lo necesito",
-    "Porque tu determinacion me inspira",
-    "Porque me aceptas con todo y mis defectos",
-    "Porque construimos recuerdos increibles juntos",
-    "Porque me haces sentir que el amor verdadero existe",
-    "Porque eres mi calma en medio del caos",
-    "Porque me tomas fotos cuando no me doy cuenta",
-    "Porque me dejas robar de tu comida",
-    "Porque me prestas tu sueter cuando tengo frio",
-    "Porque me mandas notas de voz hermosas",
-    "Porque te emocionas con las cosas pequeñas",
-    "Porque me incluyes en tus planes siempre",
-    "Porque respetas mis opiniones aunque no estes de acuerdo",
-    "Porque me haces sentir amado/a todos los dias",
-    "Porque tu lealtad es inquebrantable",
-    "Porque no me dejas renunciar a mis sueños",
-    "Porque me das los mejores consejos",
-    "Porque tu energia positiva es contagiosa",
-    "Porque me haces sentir joven y vivo/a",
-    "Porque lloras conmigo cuando estoy triste",
-    "Porque celebras conmigo cuando estoy feliz",
-    "Porque eres mi refugio",
-    "Porque me escribes cartas de amor",
-    "Porque me das besitos en la frente",
-    "Porque me cargas cuando estoy cansado/a",
-    "Porque me tratas como tu prioridad",
-    "Porque haces que cada dia sea una aventura",
-    "Porque me amas como soy, sin cambiarme",
-    "Porque me haces sentir que soy suficiente",
-    "Porque construimos un amor que vale la pena contar",
-    "Porque contigo quiero pasar el resto de mi vida",
-    "Porque simplemente eres tu, y eso basta",
-    "Porque me elegiste a mi",
+    "因为你的笑容照亮了我的一天",
+    "因为在我最需要的时候你让我笑",
+    "因为你会像世界不存在一样拥抱我",
+    "因为你总是相信我",
+    "因为你让我觉得自己是最特别的人",
+    "因为你的声音在最糟糕的时刻让我平静",
+    "因为你用心做饭",
+    "因为在我生病时你照顾我",
+    "因为没有音乐你也和我跳舞",
+    "因为你给我意想不到的吻",
+    "因为你倾听我而不评判我",
+    "因为你激励我成为更好的人",
+    "因为你让灰暗的日子有了色彩",
+    "因为你的笑声是我最喜欢的声音",
+    "因为你不用我说就牵起我的手",
+    "因为你看我的眼神像我是世界上最美好的",
+    "因为你总是说出恰到好处的话",
+    "因为你在我的疯狂中支持我",
+    "因为你让一切都值得",
+    "因为你在我最不期待的时候发甜蜜的消息",
+    "因为你关心我的幸福",
+    "因为你是我最好的朋友",
+    "因为你让我感到安全",
+    "因为在我犯错时你原谅我",
+    "因为你每天都教我新东西",
+    "因为你对我有无限的耐心",
+    "因为你会像庆祝自己的成就一样庆祝我的",
+    "因为在我需要空间时你给我空间",
+    "因为你总是记得小细节",
+    "因为你按我喜欢的方式给我泡咖啡",
+    "因为你让我觉得自己什么都行",
+    "因为你的怀抱是我最喜欢的地方",
+    "因为你总是对我诚实",
+    "因为你在我最不期待的时候给我惊喜",
+    "因为你笑我不好笑的笑话",
+    "因为你在我的冒险中陪伴我",
+    "因为你让我做真实的自己",
+    "因为我们分享舒适的沉默",
+    "因为你跟我说话时看着我的眼睛",
+    "因为你的心很宽广",
+    "因为不管在哪里你都让我有家的感觉",
+    "因为你是我理想的人生伴侣",
+    "因为你把你最宝贵的时间给了我",
+    "因为我不在时你维护我",
+    "因为你为我们两个勇敢",
+    "因为你每天都激励我",
+    "因为你的善良没有边界",
+    "因为你让我想为你变得更好",
+    "因为在你身边入睡是我最喜欢的时刻",
+    "因为和你一起醒来是最好的开始",
+    "因为你的气味让我安心",
+    "因为你确切知道我需要什么",
+    "因为你无缘无故地宠我",
+    "因为你为我们的感情而战",
+    "因为过了这么久你还是让我心动",
+    "因为你聪明得不可思议",
+    "因为你的创造力让我着迷",
+    "因为你给我做惊喜餐",
+    "因为即使跑调你也唱歌，我很喜欢",
+    "因为你发只有我懂的梗",
+    "因为我们有同样的梦想",
+    "因为即使我没道理你也站我这边",
+    "因为你是我的头号粉丝",
+    "因为我背痒时你帮我挠",
+    "因为你比任何人都更好地照顾我",
+    "因为你是我在这个世界上最喜欢的人",
+    "因为你让问题看起来很小",
+    "因为你在我需要的时候说爱我",
+    "因为你的决心激励我",
+    "因为你连同我的缺点一起接受我",
+    "因为我们一起创造了美好的回忆",
+    "因为你让我相信真爱存在",
+    "因为你是混乱中的平静",
+    "因为你在我没注意时给我拍照",
+    "因为你让我偷吃你的食物",
+    "因为你在我冷时借我你的毛衣",
+    "因为你发给我美丽的语音消息",
+    "因为你为小事而激动",
+    "因为你总是把我纳入你的计划",
+    "因为即使你不同意你也尊重我的意见",
+    "因为你每天都让我感到被爱",
+    "因为你的忠诚坚不可摧",
+    "因为你不会让我放弃梦想",
+    "因为你给我最好的建议",
+    "因为你的正能量是有感染力的",
+    "因为你让我感到年轻和有活力",
+    "因为你在我难过时陪我一起哭",
+    "因为你在我开心时和我一起庆祝",
+    "因为你是我的避风港",
+    "因为你给我写情书",
+    "因为你会亲我的额头",
+    "因为在我累了时你抱我",
+    "因为你把我当作你的优先事项",
+    "因为你让每一天都成为冒险",
+    "因为你爱我本来的样子，不改变我",
+    "因为你让我觉得自己已经足够好",
+    "因为我们建立了一段值得讲述的爱情",
+    "因为我想和你共度余生",
+    "因为你就是你，这就足够了",
+    "因为你选择了我",
 ]
 
 
@@ -1030,7 +1030,7 @@ def get_random_love_reason(
         q = q.where(LoveReason.category == category)
     reasons = session.exec(q).all()
     if not reasons:
-        raise HTTPException(status_code=404, detail="No hay razones aun")
+        raise HTTPException(status_code=404, detail="暂无爱的理由")
     return random.choice(reasons)
 
 
@@ -1074,11 +1074,11 @@ def delete_love_reason(reason_id: int, user: User = Depends(get_current_user), s
     couple_id = require_couple(user)
     reason = session.get(LoveReason, reason_id)
     if not reason or reason.couple_id != couple_id:
-        raise HTTPException(status_code=404, detail="Razon no encontrada")
+        raise HTTPException(status_code=404, detail="理由未找到")
     if reason.is_preset:
-        raise HTTPException(status_code=403, detail="No se pueden eliminar razones preestablecidas")
+        raise HTTPException(status_code=403, detail="无法删除预设理由")
     if reason.author_id != user.id:
-        raise HTTPException(status_code=403, detail="Solo el autor puede eliminar esta razon")
+        raise HTTPException(status_code=403, detail="只有作者可以删除此理由")
     session.delete(reason)
     session.commit()
     return {"ok": True}
@@ -1111,7 +1111,7 @@ def delete_countdown(countdown_id: int, user: User = Depends(get_current_user), 
     couple_id = require_couple(user)
     countdown = session.get(EventCountdown, countdown_id)
     if not countdown or countdown.couple_id != couple_id:
-        raise HTTPException(status_code=404, detail="Cuenta regresiva no encontrada")
+        raise HTTPException(status_code=404, detail="倒计时未找到")
     session.delete(countdown)
     session.commit()
     return {"ok": True}
@@ -1146,15 +1146,15 @@ def seed_bingo(user: User = Depends(get_current_user), session: Session = Depend
         select(BingoCell).where(BingoCell.couple_id == couple_id)
     ).first()
     if existing:
-        return {"seeded": False, "message": "Ya existen celdas de bingo"}
+        return {"seeded": False, "message": "宾果格已存在"}
 
     activities = [
-        "Besarse bajo la lluvia", "Ver un amanecer juntos", "Cocinar juntos",
-        "Dormir abrazados toda la noche", "Bailar en la sala", "Tener una cita sorpresa",
-        "Ver las estrellas", "Escribirse cartas de amor", "Hacer un picnic",
-        "Tomar fotos juntos", "Cantar juntos", "Hacer ejercicio juntos",
-        "Desayuno en cama", "Viaje de fin de semana", "Maraton de peliculas",
-        "Cena a la luz de las velas",
+        "在雨中接吻", "一起看日出", "一起做饭",
+        "整晚相拥而眠", "在客厅跳舞", "来一次惊喜约会",
+        "看星星", "互相写情书", "去野餐",
+        "一起拍照", "一起唱歌", "一起运动",
+        "床上早餐", "周末旅行", "电影马拉松",
+        "烛光晚餐",
     ]
     count = 0
     for i, text in enumerate(activities):
@@ -1170,7 +1170,7 @@ def toggle_bingo_cell(cell_id: int, user: User = Depends(get_current_user), sess
     couple_id = require_couple(user)
     cell = session.get(BingoCell, cell_id)
     if not cell or cell.couple_id != couple_id:
-        raise HTTPException(status_code=404, detail="Celda no encontrada")
+        raise HTTPException(status_code=404, detail="格子未找到")
     if cell.completed:
         cell.completed = False
         cell.completed_at = None
@@ -1188,7 +1188,7 @@ def delete_bingo_cell(cell_id: int, user: User = Depends(get_current_user), sess
     couple_id = require_couple(user)
     cell = session.get(BingoCell, cell_id)
     if not cell or cell.couple_id != couple_id:
-        raise HTTPException(status_code=404, detail="Celda no encontrada")
+        raise HTTPException(status_code=404, detail="格子未找到")
     session.delete(cell)
     session.commit()
     return {"ok": True}
@@ -1227,7 +1227,7 @@ def get_whos_most_likely(user: User = Depends(get_current_user), session: Sessio
 def create_whos_most_likely(data: WhosMostLikelyCreate, user: User = Depends(get_current_user), session: Session = Depends(get_session)):
     couple_id = require_couple(user)
     if user.role != "partner_1":
-        raise HTTPException(status_code=403, detail="Solo el creador puede agregar preguntas")
+        raise HTTPException(status_code=403, detail="只有创建者可以添加问题")
     question = WhosMostLikely(couple_id=couple_id, question=data.question, is_preset=False, created_by=user.id)
     session.add(question)
     session.commit()
@@ -1249,109 +1249,109 @@ def seed_whos_most_likely(user: User = Depends(get_current_user), session: Sessi
     existing_texts = {q.question for q in existing_presets}
 
     questions = [
-        # Originales
-        "¿Quien es mas probable que llore viendo una pelicula?",
-        "¿Quien es mas probable que se quede dormido/a primero?",
-        "¿Quien es mas probable que olvide una fecha importante?",
-        "¿Quien es mas probable que diga 'te amo' primero?",
-        "¿Quien es mas probable que cocine mejor?",
-        "¿Quien es mas probable que gaste mas dinero?",
-        "¿Quien es mas probable que haga una locura por amor?",
-        "¿Quien es mas probable que sea mas celoso/a?",
-        "¿Quien es mas probable que planee una sorpresa?",
-        "¿Quien es mas probable que mande mas mensajes?",
-        # Romanticas
-        "¿Quien es mas probable que escriba una carta de amor?",
-        "¿Quien es mas probable que pida un beso en publico?",
-        "¿Quien es mas probable que organice una cita perfecta?",
-        "¿Quien es mas probable que dedique una cancion?",
-        "¿Quien es mas probable que haga un regalo hecho a mano?",
-        "¿Quien es mas probable que diga algo cursi sin darse cuenta?",
-        "¿Quien es mas probable que proponga matrimonio primero?",
-        "¿Quien es mas probable que recuerde el primer beso?",
-        "¿Quien es mas probable que llore en la boda?",
-        "¿Quien es mas probable que escriba votos mas largos?",
-        # Personalidad
-        "¿Quien es mas probable que se pierda manejando?",
-        "¿Quien es mas probable que se enoje mas rapido?",
-        "¿Quien es mas probable que pida perdon primero?",
-        "¿Quien es mas probable que sea mas terco/a?",
-        "¿Quien es mas probable que cuente un chiste malo?",
-        "¿Quien es mas probable que se ria de su propio chiste?",
-        "¿Quien es mas probable que sea mas dramatico/a?",
-        "¿Quien es mas probable que exagere una historia?",
-        "¿Quien es mas probable que sea mas despistado/a?",
-        "¿Quien es mas probable que hable dormido/a?",
-        "¿Quien es mas probable que ronque mas fuerte?",
-        "¿Quien es mas probable que sea mas mañoso/a para comer?",
-        "¿Quien es mas probable que se queje del frio?",
-        "¿Quien es mas probable que se queje del calor?",
-        "¿Quien es mas probable que diga 'tengo hambre' cada hora?",
-        # Cotidianidad
-        "¿Quien es mas probable que deje la ropa tirada?",
-        "¿Quien es mas probable que lave los platos?",
-        "¿Quien es mas probable que pierda las llaves?",
-        "¿Quien es mas probable que se demore mas arreglandose?",
-        "¿Quien es mas probable que elija que ver en Netflix?",
-        "¿Quien es mas probable que robe las cobijas en la noche?",
-        "¿Quien es mas probable que se acabe el agua caliente?",
-        "¿Quien es mas probable que pida comida a domicilio?",
-        "¿Quien es mas probable que deje el celular sin bateria?",
-        "¿Quien es mas probable que se quede scrolleando hasta tarde?",
-        "¿Quien es mas probable que ponga la alarma y no se levante?",
-        "¿Quien es mas probable que olvide sacar la basura?",
-        "¿Quien es mas probable que cocine mejor un desayuno?",
-        "¿Quien es mas probable que haga mercado sin lista?",
-        "¿Quien es mas probable que compre cosas innecesarias?",
-        # Social y diversión
-        "¿Quien es mas probable que sea el alma de la fiesta?",
-        "¿Quien es mas probable que se haga amigo/a de un extraño?",
-        "¿Quien es mas probable que baile mejor?",
-        "¿Quien es mas probable que cante mas fuerte en el carro?",
-        "¿Quien es mas probable que haga karaoke sobrio/a?",
-        "¿Quien es mas probable que gane un juego de mesa?",
-        "¿Quien es mas probable que haga trampa en un juego?",
-        "¿Quien es mas probable que tome mas fotos?",
-        "¿Quien es mas probable que publique mas en redes?",
-        "¿Quien es mas probable que stalkee al otro en redes?",
-        "¿Quien es mas probable que sea mas competitivo/a?",
-        "¿Quien es mas probable que llore de risa?",
-        "¿Quien es mas probable que vea videos de gatos?",
-        "¿Quien es mas probable que se asuste mas facil?",
-        "¿Quien es mas probable que quiera ver peliculas de terror?",
-        # Aventura y futuro
-        "¿Quien es mas probable que sugiera un viaje espontaneo?",
-        "¿Quien es mas probable que quiera tirarse en paracaidas?",
-        "¿Quien es mas probable que aprenda otro idioma?",
-        "¿Quien es mas probable que adopte una mascota sin avisar?",
-        "¿Quien es mas probable que quiera mudarse a otro pais?",
-        "¿Quien es mas probable que ahorre mas dinero?",
-        "¿Quien es mas probable que gaste en algo impulsivo?",
-        "¿Quien es mas probable que empiece un hobby nuevo cada mes?",
-        "¿Quien es mas probable que sea mejor con las plantas?",
-        "¿Quien es mas probable que arme muebles sin instrucciones?",
-        # Emocional
-        "¿Quien es mas probable que necesite mas abrazos?",
-        "¿Quien es mas probable que extrañe mas al otro?",
-        "¿Quien es mas probable que mande el primer mensaje del dia?",
-        "¿Quien es mas probable que se preocupe mas por el otro?",
-        "¿Quien es mas probable que note cuando algo esta mal?",
-        "¿Quien es mas probable que haga el silencio mas incomodo?",
-        "¿Quien es mas probable que pida perdon con comida?",
-        "¿Quien es mas probable que llore con una cancion?",
-        "¿Quien es mas probable que guarde un recuerdo de todo?",
-        "¿Quien es mas probable que huela la ropa del otro?",
-        # Divertidas y random
-        "¿Quien es mas probable que sobreviva en una isla desierta?",
-        "¿Quien es mas probable que se vuelva famoso/a?",
-        "¿Quien es mas probable que aparezca en un reality show?",
-        "¿Quien es mas probable que olvide el aniversario?",
-        "¿Quien es mas probable que mienta sobre la edad?",
-        "¿Quien es mas probable que se tropiece en una cita?",
-        "¿Quien es mas probable que mande un mensaje al grupo equivocado?",
-        "¿Quien es mas probable que diga algo vergonzoso frente a los suegros?",
-        "¿Quien es mas probable que se disfrace mejor en Halloween?",
-        "¿Quien es mas probable que haga un TikTok viral?",
+        # 经典
+        "谁更可能看电影时哭？",
+        "谁更可能先睡着？",
+        "谁更可能忘记重要日期？",
+        "谁更可能先说'我爱你'？",
+        "谁更可能做饭更好吃？",
+        "谁更可能花更多钱？",
+        "谁更可能为爱做疯狂的事？",
+        "谁更可能更爱吃醋？",
+        "谁更可能策划惊喜？",
+        "谁更可能发更多消息？",
+        # 浪漫
+        "谁更可能写情书？",
+        "谁更可能在公共场合索吻？",
+        "谁更可能策划完美约会？",
+        "谁更可能献歌一首？",
+        "谁更可能做手工礼物？",
+        "谁更可能不自觉地说出肉麻的话？",
+        "谁更可能先求婚？",
+        "谁更可能记住初吻？",
+        "谁更可能在婚礼上哭泣？",
+        "谁更可能写出更长的婚礼誓言？",
+        # 性格
+        "谁更可能开车迷路？",
+        "谁更容易生气？",
+        "谁更可能先道歉？",
+        "谁更可能更固执？",
+        "谁更可能讲冷笑话？",
+        "谁更可能被自己的笑话逗笑？",
+        "谁更可能更戏剧化？",
+        "谁更可能夸大其词？",
+        "谁更可能更粗心大意？",
+        "谁更可能说梦话？",
+        "谁可能打呼噜更响？",
+        "谁更可能更挑食？",
+        "谁更可能抱怨太冷？",
+        "谁更可能抱怨太热？",
+        "谁更可能每小时都说'我饿了'？",
+        # 日常生活
+        "谁更可能乱扔衣服？",
+        "谁更可能洗碗？",
+        "谁更可能弄丢钥匙？",
+        "谁更可能出门准备更久？",
+        "谁更可能选Netflix看什么？",
+        "谁更可能半夜抢被子？",
+        "谁更可能把热水用完？",
+        "谁更可能点外卖？",
+        "谁更可能手机没电？",
+        "谁更可能刷手机到深夜？",
+        "谁更可能设了闹钟却不起床？",
+        "谁更可能忘记倒垃圾？",
+        "谁更可能做更好的早餐？",
+        "谁更可能不带清单去超市？",
+        "谁更可能买不需要的东西？",
+        # 社交与娱乐
+        "谁更可能是派对的灵魂人物？",
+        "谁更可能和陌生人交朋友？",
+        "谁更可能跳舞更好？",
+        "谁更可能在车里唱歌更大声？",
+        "谁更可能清醒时唱K？",
+        "谁更可能赢桌游？",
+        "谁更可能玩游戏时作弊？",
+        "谁更可能拍更多照片？",
+        "谁更可能在社交媒体上发更多？",
+        "谁更可能在社交媒体上偷偷关注对方？",
+        "谁更可能更好胜？",
+        "谁更可能笑到哭？",
+        "谁更可能看猫咪视频？",
+        "谁更可能更容易被吓到？",
+        "谁更可能想看恐怖片？",
+        # 冒险与未来
+        "谁更可能提议说走就走的旅行？",
+        "谁更可能想跳伞？",
+        "谁更可能学另一门语言？",
+        "谁更可能不打招呼就领养宠物？",
+        "谁更可能想搬到另一个国家？",
+        "谁更可能存更多钱？",
+        "谁更可能冲动消费？",
+        "谁更可能每个月开始一个新爱好？",
+        "谁更可能更会养植物？",
+        "谁更可能不看说明书就组装家具？",
+        # 情感
+        "谁更可能需要更多拥抱？",
+        "谁更可能更想念对方？",
+        "谁更可能每天发第一条消息？",
+        "谁更可能更关心对方？",
+        "谁更可能察觉到不对劲？",
+        "谁更可能制造更尴尬的沉默？",
+        "谁更可能用食物道歉？",
+        "谁更可能听歌听哭？",
+        "谁更可能保留一切回忆？",
+        "谁更可能闻对方的衣服？",
+        # 有趣与随机
+        "谁更可能在荒岛上生存？",
+        "谁更可能出名？",
+        "谁更可能上真人秀？",
+        "谁更可能忘记纪念日？",
+        "谁更可能谎报年龄？",
+        "谁更可能在约会时摔倒？",
+        "谁更可能发消息发错群？",
+        "谁更可能在岳父岳母面前说错话？",
+        "谁更可能万圣节装扮更好？",
+        "谁更可能拍出爆款抖音？",
     ]
     count = 0
     for text in questions:
@@ -1368,10 +1368,10 @@ def vote_whos_most_likely(question_id: int, data: dict, user: User = Depends(get
     couple_id = require_couple(user)
     question = session.get(WhosMostLikely, question_id)
     if not question or question.couple_id != couple_id:
-        raise HTTPException(status_code=404, detail="Pregunta no encontrada")
+        raise HTTPException(status_code=404, detail="问题未找到")
     voted_for = data.get("voted_for")
     if not voted_for:
-        raise HTTPException(status_code=400, detail="Debes indicar por quien votas")
+        raise HTTPException(status_code=400, detail="你必须指定投票对象")
 
     existing_vote = session.exec(
         select(WhosMostLikelyVote).where(
@@ -1406,12 +1406,12 @@ def vote_whos_most_likely(question_id: int, data: dict, user: User = Depends(get
 def delete_whos_most_likely(question_id: int, user: User = Depends(get_current_user), session: Session = Depends(get_session)):
     couple_id = require_couple(user)
     if user.role != "partner_1":
-        raise HTTPException(status_code=403, detail="Solo el creador puede eliminar preguntas")
+        raise HTTPException(status_code=403, detail="只有创建者可以删除问题")
     question = session.get(WhosMostLikely, question_id)
     if not question or question.couple_id != couple_id:
-        raise HTTPException(status_code=404, detail="Pregunta no encontrada")
+        raise HTTPException(status_code=404, detail="问题未找到")
     if question.is_preset:
-        raise HTTPException(status_code=400, detail="No se pueden eliminar preguntas predeterminadas")
+        raise HTTPException(status_code=400, detail="无法删除预设问题")
     # Delete associated votes first
     votes = session.exec(
         select(WhosMostLikelyVote).where(WhosMostLikelyVote.question_id == question_id)
@@ -1456,7 +1456,7 @@ def create_capsule(body: TimeCapsuleCreate, user: User = Depends(get_current_use
     couple_id = require_couple(user)
     opens_at_naive = body.opens_at.replace(tzinfo=None) if body.opens_at.tzinfo else body.opens_at
     if opens_at_naive <= datetime.utcnow():
-        raise HTTPException(status_code=400, detail="La fecha de apertura debe ser futura")
+        raise HTTPException(status_code=400, detail="开启日期必须是未来的日期")
     capsule = TimeCapsule(
         couple_id=couple_id,
         author_id=user.id,
@@ -1481,12 +1481,12 @@ def open_capsule(capsule_id: int, user: User = Depends(get_current_user), sessio
     couple_id = require_couple(user)
     capsule = session.get(TimeCapsule, capsule_id)
     if not capsule or capsule.couple_id != couple_id:
-        raise HTTPException(status_code=404, detail="Cápsula no encontrada")
+        raise HTTPException(status_code=404, detail="时光胶囊未找到")
     if capsule.opened:
-        raise HTTPException(status_code=400, detail="Ya fue abierta")
+        raise HTTPException(status_code=400, detail="已被打开")
     now = datetime.utcnow()
     if capsule.opens_at > now:
-        raise HTTPException(status_code=400, detail="Aún no es hora de abrir esta cápsula")
+        raise HTTPException(status_code=400, detail="还没到打开这时光胶囊的时间")
     capsule.opened = True
     capsule.opened_at = now
     session.add(capsule)
@@ -1506,9 +1506,9 @@ def upload_capsule_photo(capsule_id: int, file: UploadFile = File(...), user: Us
     couple_id = require_couple(user)
     capsule = session.get(TimeCapsule, capsule_id)
     if not capsule or capsule.couple_id != couple_id:
-        raise HTTPException(status_code=404, detail="Cápsula no encontrada")
+        raise HTTPException(status_code=404, detail="时光胶囊未找到")
     if capsule.author_id != user.id:
-        raise HTTPException(status_code=403, detail="Solo el autor puede subir foto")
+        raise HTTPException(status_code=403, detail="只有作者可以上传照片")
     UPLOADS_IMAGES_DIR.mkdir(parents=True, exist_ok=True)
     filename = f"capsule_{capsule_id}_{file.filename}"
     filepath = UPLOADS_IMAGES_DIR / filename
@@ -1525,9 +1525,9 @@ def delete_capsule(capsule_id: int, user: User = Depends(get_current_user), sess
     couple_id = require_couple(user)
     capsule = session.get(TimeCapsule, capsule_id)
     if not capsule or capsule.couple_id != couple_id:
-        raise HTTPException(status_code=404, detail="Cápsula no encontrada")
+        raise HTTPException(status_code=404, detail="时光胶囊未找到")
     if capsule.author_id != user.id:
-        raise HTTPException(status_code=403, detail="Solo el autor puede eliminarla")
+        raise HTTPException(status_code=403, detail="只有作者可以删除")
     session.delete(capsule)
     session.commit()
     return {"ok": True}
@@ -1637,7 +1637,7 @@ def get_open_when_letters(user: User = Depends(get_current_user), session: Sessi
 def create_open_when_letter(data: OpenWhenLetterCreate, user: User = Depends(get_current_user), session: Session = Depends(get_session)):
     couple_id = require_couple(user)
     if data.category not in OPEN_WHEN_CATEGORIES:
-        raise HTTPException(status_code=400, detail="Categoría no válida")
+        raise HTTPException(status_code=400, detail="无效分类")
     letter = OpenWhenLetter(
         couple_id=couple_id,
         author_id=user.id,
@@ -1660,11 +1660,11 @@ def open_when_letter(letter_id: int, user: User = Depends(get_current_user), ses
     couple_id = require_couple(user)
     letter = session.get(OpenWhenLetter, letter_id)
     if not letter or letter.couple_id != couple_id:
-        raise HTTPException(status_code=404, detail="Carta no encontrada")
+        raise HTTPException(status_code=404, detail="信件未找到")
     if letter.opened_by:
-        raise HTTPException(status_code=400, detail="Esta carta ya fue abierta")
+        raise HTTPException(status_code=400, detail="此信件已被打开")
     if letter.author_id == user.id:
-        raise HTTPException(status_code=400, detail="No puedes abrir tu propia carta")
+        raise HTTPException(status_code=400, detail="你不能打开自己的信件")
     letter.opened_by = user.id
     letter.opened_at = datetime.utcnow()
     session.add(letter)
@@ -1679,9 +1679,9 @@ def delete_open_when_letter(letter_id: int, user: User = Depends(get_current_use
     couple_id = require_couple(user)
     letter = session.get(OpenWhenLetter, letter_id)
     if not letter or letter.couple_id != couple_id:
-        raise HTTPException(status_code=404, detail="Carta no encontrada")
+        raise HTTPException(status_code=404, detail="信件未找到")
     if letter.author_id != user.id:
-        raise HTTPException(status_code=403, detail="Solo el autor puede eliminar esta carta")
+        raise HTTPException(status_code=403, detail="只有作者可以删除此信件")
     session.delete(letter)
     session.commit()
     return {"ok": True}
@@ -1690,7 +1690,7 @@ def delete_open_when_letter(letter_id: int, user: User = Depends(get_current_use
 # --- Movie / Series Picker ---
 
 _MOVIE_SEED = [
-    # ── Acción ──
+    # ── 动作 ──
     ("John Wick", 2014, "action", "movie", "🔫"),
     ("Mad Max: Fury Road", 2015, "action", "movie", "🏎️"),
     ("Gladiator", 2000, "action", "movie", "⚔️"),
@@ -1706,7 +1706,7 @@ _MOVIE_SEED = [
     ("Black Panther", 2018, "action", "movie", "🐆"),
     ("Extraction", 2020, "action", "movie", "💣"),
     ("300", 2006, "action", "movie", "🛡️"),
-    # ── Comedia ──
+    # ── 喜剧 ──
     ("Superbad", 2007, "comedy", "movie", "😂"),
     ("The Hangover", 2009, "comedy", "movie", "🍻"),
     ("Bridesmaids", 2011, "comedy", "movie", "👰"),
@@ -1722,7 +1722,7 @@ _MOVIE_SEED = [
     ("Click", 2006, "comedy", "movie", "📺"),
     ("Liar Liar", 1997, "comedy", "movie", "🤥"),
     ("Mrs. Doubtfire", 1993, "comedy", "movie", "👵"),
-    # ── Romance ──
+    # ── 爱情 ──
     ("The Notebook", 2004, "romance", "movie", "💌"),
     ("Pride & Prejudice", 2005, "romance", "movie", "📖"),
     ("Titanic", 1997, "romance", "movie", "🚢"),
@@ -1741,7 +1741,7 @@ _MOVIE_SEED = [
     ("After", 2019, "romance", "movie", "🔥"),
     ("A Través de Mi Ventana", 2022, "romance", "movie", "🪟"),
     ("Purple Hearts", 2022, "romance", "movie", "💜"),
-    # ── Terror ──
+    # ── 恐怖 ──
     ("Get Out", 2017, "horror", "movie", "🧠"),
     ("A Quiet Place", 2018, "horror", "movie", "🤫"),
     ("Hereditary", 2018, "horror", "movie", "👁️"),
@@ -1757,7 +1757,7 @@ _MOVIE_SEED = [
     ("Smile", 2022, "horror", "movie", "😊"),
     ("Nope", 2022, "horror", "movie", "🛸"),
     ("Talk to Me", 2023, "horror", "movie", "🤚"),
-    # ── Drama ──
+    # ── 剧情 ──
     ("The Shawshank Redemption", 1994, "drama", "movie", "🔒"),
     ("Forrest Gump", 1994, "drama", "movie", "🏃"),
     ("The Pursuit of Happyness", 2006, "drama", "movie", "🧳"),
@@ -1773,7 +1773,7 @@ _MOVIE_SEED = [
     ("Oppenheimer", 2023, "drama", "movie", "💣"),
     ("Everything Everywhere All at Once", 2022, "drama", "movie", "🥯"),
     ("The Father", 2020, "drama", "movie", "🧓"),
-    # ── Ciencia Ficción ──
+    # ── 科幻 ──
     ("Interstellar", 2014, "scifi", "movie", "🌌"),
     ("Inception", 2010, "scifi", "movie", "🌀"),
     ("Blade Runner 2049", 2017, "scifi", "movie", "🤖"),
@@ -1789,7 +1789,7 @@ _MOVIE_SEED = [
     ("Back to the Future", 1985, "scifi", "movie", "⚡"),
     ("District 9", 2009, "scifi", "movie", "🦐"),
     ("Alien", 1979, "scifi", "movie", "🥚"),
-    # ── Animación ──
+    # ── 动画 ──
     ("Spider-Man: Into the Spider-Verse", 2018, "animation", "movie", "🕸️"),
     ("Coco", 2017, "animation", "movie", "🎸"),
     ("Soul", 2020, "animation", "movie", "🎹"),
@@ -1918,7 +1918,7 @@ def get_random_movie(
         q = q.where(MoviePick.media_type == media_type)
     movies = session.exec(q).all()
     if not movies:
-        raise HTTPException(status_code=404, detail="No hay peliculas disponibles")
+        raise HTTPException(status_code=404, detail="没有可用的电影")
     return random.choice(movies)
 
 
@@ -1969,7 +1969,7 @@ def delete_movie(movie_id: int, user: User = Depends(get_current_user), session:
     if not movie or movie.couple_id != couple_id:
         raise HTTPException(status_code=404)
     if movie.is_preset:
-        raise HTTPException(status_code=403, detail="No se pueden eliminar peliculas preestablecidas")
+        raise HTTPException(status_code=403, detail="无法删除预设电影")
     session.delete(movie)
     session.commit()
     return {"ok": True}
@@ -2013,7 +2013,7 @@ _SONG_SEED = [
     ("Do I Wanna Know?", "Arctic Monkeys", 2013, "rock", "chill"),
     ("Yellow", "Coldplay", 2000, "rock", "romantic"),
     ("Iris", "Goo Goo Dolls", 1998, "rock", "romantic"),
-    # ── R&B / Soul ──
+    # ── 节奏布鲁斯 / 灵魂乐 ──
     ("Earned It", "The Weeknd", 2015, "rnb", "romantic"),
     ("All of Me", "John Legend", 2013, "rnb", "romantic"),
     ("Thinking Out Loud", "Ed Sheeran", 2014, "rnb", "romantic"),
@@ -2029,7 +2029,7 @@ _SONG_SEED = [
     ("We Found Love", "Rihanna", 2011, "rnb", "energetic"),
     ("Drunk in Love", "Beyonce", 2013, "rnb", "romantic"),
     ("Motivation", "Normani", 2019, "rnb", "energetic"),
-    # ── Reggaeton / Latino ──
+    # ── 雷鬼动 / 拉丁 ──
     ("Titi Me Pregunto", "Bad Bunny", 2022, "reggaeton", "energetic"),
     ("Dakiti", "Bad Bunny & Jhay Cortez", 2020, "reggaeton", "energetic"),
     ("Pepas", "Farruko", 2021, "reggaeton", "energetic"),
@@ -2045,7 +2045,7 @@ _SONG_SEED = [
     ("La Jumpa", "Arcangel & Bad Bunny", 2022, "reggaeton", "energetic"),
     ("Provenza", "Karol G", 2022, "reggaeton", "happy"),
     ("Ojitos Lindos", "Bad Bunny & Bomba Estereo", 2022, "reggaeton", "romantic"),
-    # ── Electronica / EDM ──
+    # ── 电子 / EDM ──
     ("Midnight City", "M83", 2011, "electronic", "energetic"),
     ("Strobe", "Deadmau5", 2009, "electronic", "chill"),
     ("Titanium", "David Guetta ft. Sia", 2011, "electronic", "energetic"),
@@ -2061,7 +2061,7 @@ _SONG_SEED = [
     ("Alone", "Marshmello", 2016, "electronic", "chill"),
     ("This Is What You Came For", "Calvin Harris ft. Rihanna", 2016, "electronic", "energetic"),
     ("Animals", "Martin Garrix", 2013, "electronic", "energetic"),
-    # ── Hip Hop / Rap ──
+    # ── 嘻哈 / 说唱 ──
     ("HUMBLE.", "Kendrick Lamar", 2017, "hiphop", "energetic"),
     ("God's Plan", "Drake", 2018, "hiphop", "chill"),
     ("Sicko Mode", "Travis Scott", 2018, "hiphop", "energetic"),
@@ -2077,7 +2077,7 @@ _SONG_SEED = [
     ("Money Trees", "Kendrick Lamar", 2012, "hiphop", "chill"),
     ("Laugh Now Cry Later", "Drake ft. Lil Durk", 2020, "hiphop", "energetic"),
     ("Dákiti", "Bad Bunny & Jhay Cortez", 2020, "hiphop", "chill"),
-    # ── Indie / Alternativo ──
+    # ── 独立 / 另类 ──
     ("Sweater Weather", "The Neighbourhood", 2013, "indie", "chill"),
     ("Cigarettes After Sex", "Apocalypse", 2017, "indie", "sad"),
     ("Electric Feel", "MGMT", 2007, "indie", "happy"),
@@ -2093,7 +2093,7 @@ _SONG_SEED = [
     ("Notion", "The Rare Occasions", 2019, "indie", "energetic"),
     ("Two Ghosts", "Harry Styles", 2017, "indie", "nostalgic"),
     ("Mystery of Love", "Sufjan Stevens", 2017, "indie", "romantic"),
-    # ── Baladas / Romanticas ──
+    # ── 情歌 / 浪漫 ──
     ("Perfect", "Ed Sheeran", 2017, "ballad", "romantic"),
     ("A Thousand Years", "Christina Perri", 2011, "ballad", "romantic"),
     ("Say You Won't Let Go", "James Arthur", 2016, "ballad", "romantic"),
@@ -2136,7 +2136,7 @@ _SONG_SEED = [
     ("Come Away with Me", "Norah Jones", 2002, "jazz", "romantic"),
     ("Blue in Green", "Miles Davis", 1959, "jazz", "sad"),
     ("The Thrill Is Gone", "B.B. King", 1970, "jazz", "sad"),
-    # ── Clasica / Instrumental ──
+    # ── 古典 / 纯音乐 ──
     ("Clair de Lune", "Debussy", 1905, "classical", "chill"),
     ("Moonlight Sonata", "Beethoven", 1801, "classical", "sad"),
     ("Canon in D", "Pachelbel", 1680, "classical", "romantic"),
@@ -2202,7 +2202,7 @@ def get_random_song(
         q = q.where(SongPick.mood == mood)
     songs = session.exec(q).all()
     if not songs:
-        raise HTTPException(status_code=404, detail="No hay canciones disponibles")
+        raise HTTPException(status_code=404, detail="没有可用的歌曲")
     return random.choice(songs)
 
 
@@ -2253,7 +2253,7 @@ def delete_song(song_id: int, user: User = Depends(get_current_user), session: S
     if not song or song.couple_id != couple_id:
         raise HTTPException(status_code=404)
     if song.is_preset:
-        raise HTTPException(status_code=403, detail="No se pueden eliminar canciones preestablecidas")
+        raise HTTPException(status_code=403, detail="无法删除预设歌曲")
     session.delete(song)
     session.commit()
     return {"ok": True}

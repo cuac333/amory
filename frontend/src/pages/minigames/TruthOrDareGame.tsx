@@ -396,7 +396,7 @@ export default function TruthOrDareGame() {
                         {/* Bottom info */}
                         <div className="relative z-10 px-5 pb-5 flex items-center justify-between">
                           <span className="text-[10px] text-white/30 font-medium flex items-center gap-1">
-                            {card.is_preset ? <><Sparkles size={10} /> Preset</> : "Custom"}
+                            {card.is_preset ? <><Sparkles size={10} /> 预设</> : "自定义"}
                           </span>
                           <span className="text-[10px] text-white/30 font-medium">
                             ← {t("tod.swipe")} →

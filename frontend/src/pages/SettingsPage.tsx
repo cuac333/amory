@@ -100,7 +100,7 @@ export default function SettingsPage() {
       updateUser(res.data);
       window.location.reload();
     } catch (err: any) {
-      alert("Error al subir avatar: " + (err?.response?.data?.detail || err?.message || "Error desconocido"));
+      alert("上传头像失败：" + (err?.response?.data?.detail || err?.message || "未知错误"));
     }
   };
 
@@ -115,7 +115,7 @@ export default function SettingsPage() {
       });
       setCouple(res.data);
     } catch (err: any) {
-      alert("Error al subir foto: " + (err?.response?.data?.detail || err?.message || "Error desconocido"));
+      alert("上传照片失败：" + (err?.response?.data?.detail || err?.message || "未知错误"));
     }
   };
 
@@ -318,7 +318,7 @@ export default function SettingsPage() {
                 <Palette size={12} className="text-charcoal-400" />
               )}
             </div>
-            <span className="text-[8px] font-medium text-charcoal-500 dark:text-warm-400 leading-tight text-center">{t("theme.custom") || "Custom"}</span>
+            <span className="text-[8px] font-medium text-charcoal-500 dark:text-warm-400 leading-tight text-center">{t("theme.custom") || "自定义"}</span>
             {colorTheme === "custom" && (
               <div className="absolute -top-1 -right-1 w-3.5 h-3.5 rounded-full bg-burnt-400 flex items-center justify-center">
                 <Check size={8} className="text-white" />
@@ -339,7 +339,7 @@ export default function SettingsPage() {
               <div className="w-full h-full" style={{ backgroundColor: customColor }} />
             </label>
             <div className="flex-1">
-              <p className="text-xs font-medium text-charcoal-600 dark:text-warm-300">{t("theme.custom.pick") || "Elige tu color"}</p>
+              <p className="text-xs font-medium text-charcoal-600 dark:text-warm-300">{t("theme.custom.pick") || "选择你的颜色"}</p>
               <p className="text-[10px] text-charcoal-400 font-mono">{customColor}</p>
             </div>
           </div>
