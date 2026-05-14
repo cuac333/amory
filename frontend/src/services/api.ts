@@ -1,7 +1,9 @@
 import axios from "axios";
 
+const SERVER_BASE = "http://47.108.186.1/amory";
+
 const api = axios.create({
-  baseURL: "/api",
+  baseURL: `${SERVER_BASE}/api`,
 });
 
 api.interceptors.request.use((config) => {
@@ -26,10 +28,27 @@ function addUtcSuffix(obj: any): any {
   return obj;
 }
 
+// Resolve relative image paths (e.g. /uploads/images/xxx) to absolute server URLs
+function resolveImageUrls(obj: any): any {
+  if (Array.isArray(obj)) return obj.map(resolveImageUrls);
+  if (obj && typeof obj === "object") {
+    const out: any = {};
+    for (const k in obj) {
+      if ((k === "photo_url" || k === "image_url" || k === "avatar_url") && typeof obj[k] === "string" && obj[k].startsWith("/")) {
+        out[k] = SERVER_BASE + obj[k];
+      } else {
+        out[k] = resolveImageUrls(obj[k]);
+      }
+    }
+    return out;
+  }
+  return obj;
+}
+
 api.interceptors.response.use(
   (response) => {
     if (response.data && typeof response.data === "object") {
-      response.data = addUtcSuffix(response.data);
+      response.data = resolveImageUrls(addUtcSuffix(response.data));
     }
     return response;
   },
