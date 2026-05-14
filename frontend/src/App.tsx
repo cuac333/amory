@@ -1,4 +1,5 @@
 import { BrowserRouter, Routes, Route, Navigate, useLocation } from "react-router-dom";
+import { Capacitor } from "@capacitor/core";
 import { AuthProvider, useAuth } from "./context/AuthContext";
 import { SpotifyProvider } from "./context/SpotifyContext";
 import { ThemeProvider } from "./context/ThemeContext";
@@ -72,7 +73,7 @@ export default function App() {
   return (
     <ThemeProvider>
       <I18nProvider>
-        <BrowserRouter>
+        <BrowserRouter basename={Capacitor.isNativePlatform() ? "" : "/amory"}>
           <AuthProvider>
             <SpotifyProvider>
               <AppRoutes />
