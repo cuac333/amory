@@ -5,7 +5,7 @@ const config: CapacitorConfig = {
   appName: "Amory",
   webDir: "dist",
   server: {
-    url: "https://47.108.186.1/amory",
+    url: "http://47.108.186.1/amory",
     androidScheme: "https",
   },
   plugins: {
