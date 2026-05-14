@@ -3,12 +3,14 @@ import react from '@vitejs/plugin-react'
 import tailwindcss from '@tailwindcss/vite'
 import { VitePWA } from 'vite-plugin-pwa'
 
+const isCapacitor = process.env.CAPACITOR === 'true'
+
 export default defineConfig({
-  base: '/amory/',
+  base: isCapacitor ? '/' : '/amory/',
   plugins: [
     react(),
     tailwindcss(),
-    VitePWA({
+    ...(!isCapacitor ? [VitePWA({
       registerType: 'autoUpdate',
       includeAssets: ['icons/icon-192.png', 'icons/icon-512.png', 'icons/apple-touch-icon.png'],
       manifest: {
@@ -60,7 +62,7 @@ export default defineConfig({
           },
         ],
       },
-    }),
+    })] : []),
   ],
   server: {
     proxy: {
