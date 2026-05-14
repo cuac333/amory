@@ -1,12 +1,11 @@
 :80 {
-    redir https://{host}{uri} permanent
-}
 
-{$DOMAIN} {
-    tls internal
-
+    handle /api/* {
+        uri strip_prefix /api
+        reverse_proxy backend:8000
+    }
     handle /amory/api/* {
-        uri strip_prefix /amory
+        uri strip_prefix /amory/api
         reverse_proxy backend:8000
     }
     handle /uploads/* {
