@@ -4,6 +4,7 @@ import LikeButton from "./LikeButton";
 import CommentSection from "./CommentSection";
 import ReactionBar from "./ReactionBar";
 import { ImageIcon, Quote } from "lucide-react";
+import { ClickableImage } from "../shared/ImageViewer";
 
 interface Props {
   page: BookPage;
@@ -44,11 +45,10 @@ const Page = forwardRef<HTMLDivElement, Props>(({ page, pageNumber }, ref) => {
               className="bg-white p-1.5 shadow-md rounded-sm relative"
               style={{ transform: `rotate(${(isEven ? -1 : 1) * 1}deg)` }}
             >
-              <img
+              <ClickableImage
                 src={page.photo_url}
                 alt={page.title || "回忆"}
                 className="w-full max-h-[180px] object-cover rounded-sm"
-                loading="lazy"
               />
               {/* Photo tape effect */}
               <div className="absolute -top-2 left-1/2 -translate-x-1/2 w-12 h-4 bg-sandy-100/70 rotate-1" style={{ clipPath: "polygon(5% 0%, 95% 0%, 100% 100%, 0% 100%)" }} />

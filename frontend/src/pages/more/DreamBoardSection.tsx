@@ -10,6 +10,7 @@ import { useAuth } from "../../context/AuthContext";
 import { useTranslation } from "../../context/I18nContext";
 import type { DreamItem, DeletionRequest } from "../../types";
 import DeleteButton from "../../components/shared/DeleteButton";
+import { ClickableImage } from "../../components/shared/ImageViewer";
 
 const CATEGORIES_DATA = [
   { key: "travel", labelKey: "dreams.cat.travel", icon: Plane, gradient: "from-sky-400 to-cyan-300" },
@@ -331,7 +332,7 @@ export default function DreamBoardSection() {
                   {/* Image or gradient header */}
                   {dream.image_url ? (
                     <div className="relative h-24">
-                      <img
+                      <ClickableImage
                         src={dream.image_url}
                         alt={dream.title}
                         className="w-full h-full object-cover"

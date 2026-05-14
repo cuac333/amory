@@ -21,7 +21,7 @@ import SettingsPage from "./pages/SettingsPage";
 import OnboardingPage from "./pages/OnboardingPage";
 import ChatPage from "./pages/ChatPage";
 import MemoryMapPage from "./pages/MemoryMapPage";
-import TicketsPage from "./pages/TicketsPage";
+
 
 function PrivateRoute({ children }: { children: React.ReactNode }) {
   const { user, isLoading } = useAuth();
@@ -62,7 +62,7 @@ function AppRoutes() {
       <Route path="/minigames" element={<PrivateRoute><Layout><MinigamesPage /></Layout></PrivateRoute>} />
       <Route path="/chat" element={<PrivateRoute><Layout><ChatPage /></Layout></PrivateRoute>} />
       <Route path="/map" element={<PrivateRoute><Layout><MemoryMapPage /></Layout></PrivateRoute>} />
-      <Route path="/tickets" element={<PrivateRoute><Layout><TicketsPage /></Layout></PrivateRoute>} />
+
       <Route path="/more" element={<PrivateRoute><Layout><MorePage /></Layout></PrivateRoute>} />
       <Route path="/settings" element={<PrivateRoute><Layout><SettingsPage /></Layout></PrivateRoute>} />
     </Routes>

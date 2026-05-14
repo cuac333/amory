@@ -4,7 +4,7 @@ import { motion } from "framer-motion";
 import {
   Music2, ChefHat, Sparkles, Swords, PiggyBank, CalendarDays,
   MoreHorizontal, ChevronRight, ArrowLeft, Settings, MessageCircle, MapPin,
-  Package, Zap, FileDown, Loader2, Ticket,
+  Package, Zap, FileDown, Loader2, Heart, MapPinned,
 } from "lucide-react";
 import { useTranslation } from "../context/I18nContext";
 import api from "../services/api";
@@ -76,18 +76,8 @@ export default function MorePage() {
           <p className="text-sm text-charcoal-300 mt-0.5">{t("more.desc")}</p>
         </div>
 
-        {/* Featured links: Chat + Map + Tickets */}
+        {/* Featured links: Map + Outings + Wishlist */}
         <div className="grid grid-cols-2 gap-3">
-          <Link
-            to="/chat"
-            className="bg-gradient-to-br from-burnt-300 to-sandy-300 rounded-2xl p-4 shadow-elevated hover:shadow-lg hover:-translate-y-0.5 transition-all text-left group"
-          >
-            <div className="w-10 h-10 rounded-xl bg-white/20 flex items-center justify-center mb-2 group-hover:scale-105 transition-transform">
-              <MessageCircle size={20} className="text-white" />
-            </div>
-            <p className="font-semibold text-white text-sm">{t("more.chat")}</p>
-            <p className="text-[11px] text-white/70 mt-0.5">{t("more.chat.desc")}</p>
-          </Link>
           <Link
             to="/map"
             className="bg-gradient-to-br from-verdigris-400 to-verdigris-600 rounded-2xl p-4 shadow-elevated hover:shadow-lg hover:-translate-y-0.5 transition-all text-left group"
@@ -99,16 +89,26 @@ export default function MorePage() {
             <p className="text-[11px] text-white/70 mt-0.5">{t("more.map.desc")}</p>
           </Link>
           <Link
-            to="/tickets"
+            to="/outings"
+            className="bg-gradient-to-br from-burnt-300 to-sandy-300 rounded-2xl p-4 shadow-elevated hover:shadow-lg hover:-translate-y-0.5 transition-all text-left group"
+          >
+            <div className="w-10 h-10 rounded-xl bg-white/20 flex items-center justify-center mb-2 group-hover:scale-105 transition-transform">
+              <MapPinned size={20} className="text-white" />
+            </div>
+            <p className="font-semibold text-white text-sm">{t("nav.outings")}</p>
+            <p className="text-[11px] text-white/70 mt-0.5">{t("more.outings.desc")}</p>
+          </Link>
+          <Link
+            to="/wishlist"
             className="col-span-2 bg-gradient-to-br from-tuscan-300 to-burnt-400 rounded-2xl p-4 shadow-elevated hover:shadow-lg hover:-translate-y-0.5 transition-all text-left group"
           >
             <div className="flex items-center gap-3">
               <div className="w-10 h-10 rounded-xl bg-white/20 flex items-center justify-center group-hover:scale-105 transition-transform shrink-0">
-                <Ticket size={20} className="text-white" />
+                <Heart size={20} className="text-white" />
               </div>
               <div className="flex-1 min-w-0">
-                <p className="font-semibold text-white text-sm">Boletas</p>
-                <p className="text-[11px] text-white/80 mt-0.5">Sigue eventos y recibe aviso cuando salgan las boletas</p>
+                <p className="font-semibold text-white text-sm">{t("nav.wishlist")}</p>
+                <p className="text-[11px] text-white/80 mt-0.5">{t("more.wishlist.desc")}</p>
               </div>
               <ChevronRight size={16} className="text-white/70 group-hover:translate-x-0.5 transition-transform" />
             </div>

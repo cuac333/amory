@@ -13,6 +13,7 @@ import ReactionBar from "../components/book/ReactionBar";
 import LikeButton from "../components/book/LikeButton";
 import DeleteButton from "../components/shared/DeleteButton";
 import DatePickerShared from "../components/shared/DatePicker";
+import { ClickableImage } from "../components/shared/ImageViewer";
 
 const LocationPicker = lazy(() => import("../components/shared/LocationPicker"));
 const MiniMap = lazy(() => import("../components/shared/MiniMap"));
@@ -464,11 +465,10 @@ function TimelineCard({ page, hasEvent, faded, gradient, onSelect, deleteRequest
         {/* Photo or gradient placeholder */}
         {page.photo_url ? (
           <div className="h-32 md:h-36 overflow-hidden relative">
-            <img
+            <ClickableImage
               src={page.photo_url}
               alt={page.title || ""}
               className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
-              loading="lazy"
             />
             {/* Gradient overlay at bottom */}
             <div className="absolute bottom-0 left-0 right-0 h-12 bg-gradient-to-t from-black/20 to-transparent" />
@@ -587,7 +587,7 @@ function FloatingFrame({ index, url, meta, onUpload, onClick, style }: {
             className={`overflow-hidden rounded-sm cursor-pointer ${style.vertical ? "aspect-[3/4]" : "aspect-[4/3]"}`}
             onClick={(e) => { e.stopPropagation(); onClick?.(); }}
           >
-            <img src={url} alt="" className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300" loading="lazy" />
+            <ClickableImage src={url} alt="" className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300" />
             {meta?.caption && (
               <div className="absolute bottom-2 left-2 right-2 bg-black/40 backdrop-blur-sm rounded-md px-2 py-1">
                 <p className="text-white text-[9px] font-medium truncate">{meta.caption}</p>
@@ -1018,7 +1018,7 @@ function StoryModal({ page: initialPage, onClose, onPageCreated }: {
                       className="aspect-square overflow-hidden rounded-lg cursor-pointer"
                       onClick={() => photoMeta[i] && setDetailPhoto(photoMeta[i])}
                     >
-                      <img src={url} alt="" className="w-full h-full object-cover" />
+                      <ClickableImage src={url} alt="" className="w-full h-full object-cover" />
                       {photoMeta[i]?.caption && (
                         <div className="absolute bottom-0 left-0 right-0 bg-black/40 px-1.5 py-0.5">
                           <p className="text-white text-[8px] truncate">{photoMeta[i]!.caption}</p>

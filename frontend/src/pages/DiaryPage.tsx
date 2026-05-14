@@ -10,6 +10,7 @@ import api from "../services/api";
 import { useAuth } from "../context/AuthContext";
 import { useTranslation } from "../context/I18nContext";
 import DeleteButton from "../components/shared/DeleteButton";
+import { ClickableImage } from "../components/shared/ImageViewer";
 
 import type { DiaryEntry, DeletionRequest } from "../types";
 
@@ -462,7 +463,7 @@ function DiaryCard({ entry, isOwn, deleteRequest, currentUserId, onDeleteAction,
 
         {/* Photo */}
         {entry.photo_url && (
-          <img src={entry.photo_url} alt="" className="mt-3 rounded-xl w-full max-h-56 object-cover shadow-sm" />
+          <ClickableImage src={entry.photo_url} alt="" className="mt-3 rounded-xl w-full max-h-56 object-cover shadow-sm" />
         )}
 
         {/* Footer */}

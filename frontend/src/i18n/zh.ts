@@ -365,6 +365,8 @@ const zh: Record<string, string> = {
   "more.chat.desc": "你们之间的消息",
   "more.map": "回忆地图",
   "more.map.desc": "你们一起去过的地方",
+  "more.outings.desc": "计划和记录你们的约会",
+  "more.wishlist.desc": "你们想一起做的事情",
   "more.export": "导出 Amory",
   "more.export.desc": "将你们的故事下载为 PDF",
   "more.exporting": "生成 PDF 中...",

@@ -4,6 +4,7 @@ import { useAuth } from "../context/AuthContext";
 import { useTranslation } from "../context/I18nContext";
 import api from "../services/api";
 import type { ChatMessage } from "../types";
+import { ClickableImage } from "../components/shared/ImageViewer";
 import {
   Send, Image, Reply, Pin, Smile, Trash2, X,
   ChevronDown, PinOff, Heart, MessageCircle,
@@ -665,11 +666,10 @@ export default function ChatPage() {
                       )}
 
                       {msg.image_url && (
-                        <img
+                        <ClickableImage
                           src={msg.image_url}
                           alt=""
-                          className="rounded-xl max-w-full max-h-64 object-cover mb-1.5 cursor-pointer hover:opacity-90 transition-opacity"
-                          loading="lazy"
+                          className="rounded-xl max-w-full max-h-64 object-cover mb-1.5"
                         />
                       )}
 

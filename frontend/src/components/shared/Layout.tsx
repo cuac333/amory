@@ -4,7 +4,7 @@ import Navbar from "./Navbar";
 import SpotifyMiniPlayer from "./SpotifyMiniPlayer";
 import PageTransition from "./PageTransition";
 
-const NAV_PATHS = ["/", "/book", "/monthly", "/outings", "/wishlist", "/diary", "/minigames", "/more"];
+const NAV_PATHS = ["/", "/book", "/monthly", "/diary", "/chat", "/minigames", "/more"];
 
 export default function Layout({ children }: { children: ReactNode }) {
   const location = useLocation();

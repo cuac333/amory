@@ -365,6 +365,8 @@ const es = {
   "more.chat.desc": "Mensajes entre ustedes",
   "more.map": "Mapa de Recuerdos",
   "more.map.desc": "Lugares que visitaron juntos",
+  "more.outings.desc": "Planifica y registra tus salidas",
+  "more.wishlist.desc": "Cosas que quieren hacer juntos",
   "more.export": "Exportar Amory",
   "more.export.desc": "Descarga toda su historia en PDF",
   "more.exporting": "Generando PDF...",

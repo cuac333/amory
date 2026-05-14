@@ -15,6 +15,7 @@ import DatePicker from "../components/shared/DatePicker";
 import CustomSelect from "../components/shared/CustomSelect";
 
 import Avatar from "../components/shared/Avatar";
+import { ClickableImage } from "../components/shared/ImageViewer";
 
 export default function SettingsPage() {
   const { user, updateUser, logout } = useAuth();
@@ -126,7 +127,7 @@ export default function SettingsPage() {
       {couple && (
         <div className="relative rounded-2xl overflow-hidden shadow-soft">
           {couple.photo_url ? (
-            <img
+            <ClickableImage
               src={couple.photo_url}
               alt={t("settings.couple.photo")}
               className="w-full h-36 object-cover"

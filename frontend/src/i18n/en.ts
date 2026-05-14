@@ -365,6 +365,8 @@ const en: Record<string, string> = {
   "more.chat.desc": "Messages between you two",
   "more.map": "Memory Map",
   "more.map.desc": "Places you visited together",
+  "more.outings.desc": "Plan and log your dates",
+  "more.wishlist.desc": "Things you want to do together",
   "more.export": "Export Amory",
   "more.export.desc": "Download your entire story as PDF",
   "more.exporting": "Generating PDF...",

@@ -10,6 +10,7 @@ import { useTranslation } from "../../context/I18nContext";
 import api from "../../services/api";
 import type { Recipe, DeletionRequest } from "../../types";
 import DeleteButton from "../../components/shared/DeleteButton";
+import { ClickableImage } from "../../components/shared/ImageViewer";
 
 type FilterTab = "all" | "pending" | "cooked";
 
@@ -396,7 +397,7 @@ export default function RecipesSection() {
                 {/* Photo header */}
                 {recipe.photo_url && (
                   <div className="relative h-36">
-                    <img
+                    <ClickableImage
                       src={recipe.photo_url}
                       alt={recipe.title}
                       className="w-full h-full object-cover"

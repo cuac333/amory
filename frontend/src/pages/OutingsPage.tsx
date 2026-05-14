@@ -10,6 +10,7 @@ import api from "../services/api";
 import { useAuth } from "../context/AuthContext";
 import { useTranslation } from "../context/I18nContext";
 import DeleteButton from "../components/shared/DeleteButton";
+import { ClickableImage } from "../components/shared/ImageViewer";
 
 import type { Outing, BucketListItem, DeletionRequest } from "../types";
 import CreatorBadge from "../components/shared/CreatorBadge";
@@ -653,7 +654,7 @@ function OutingCard({ outing: o, deleteRequest, currentUserId, onVote, onComplet
                 >
                   {docs.map((doc) => (
                     <div key={doc.id} className="bg-warm-50/80 dark:bg-charcoal-700/50 rounded-xl overflow-hidden border border-warm-200/15 dark:border-charcoal-600/15">
-                      <img src={doc.photo_url} alt="" className="w-full max-h-56 object-cover" />
+                      <ClickableImage src={doc.photo_url} alt="" className="w-full max-h-56 object-cover" />
                       <div className="p-3">
                         <div className="flex items-center gap-2 mb-1">
                           <div className="w-5 h-5 rounded-full bg-gradient-to-br from-burnt-300 to-sandy-300 flex items-center justify-center text-white text-[8px] font-bold">

@@ -10,6 +10,7 @@ import api from "../../services/api";
 import type { TimelineEvent } from "../../types";
 import DatePicker from "../../components/shared/DatePicker";
 import CreatorBadge from "../../components/shared/CreatorBadge";
+import { ClickableImage } from "../../components/shared/ImageViewer";
 
 const ICON_OPTIONS_DATA: { key: string; labelKey: string; icon: React.FC<{ size?: number; className?: string }> }[] = [
   { key: "heart", labelKey: "timeline.icon.love", icon: Heart },
@@ -215,7 +216,7 @@ export default function TimelineSection() {
                     </div>
 
                     {event.photo_url && (
-                      <img
+                      <ClickableImage
                         src={event.photo_url}
                         alt={event.title}
                         className="mt-2.5 rounded-xl w-full h-32 object-cover"

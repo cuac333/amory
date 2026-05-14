@@ -13,6 +13,7 @@ import DatePicker from "../../components/shared/DatePicker";
 import TimePicker from "../../components/shared/TimePicker";
 import type { TimeCapsule, DeletionRequest } from "../../types";
 import CreatorBadge from "../../components/shared/CreatorBadge";
+import { ClickableImage } from "../../components/shared/ImageViewer";
 
 function timeUntil(date: string) {
   const diff = new Date(date).getTime() - Date.now();
@@ -460,7 +461,7 @@ export default function TimeCapsuleSection() {
                 {/* Photo header */}
                 {c.photo_url && (
                   <div className="relative h-40">
-                    <img src={c.photo_url} alt="" className="w-full h-full object-cover" />
+                    <ClickableImage src={c.photo_url} alt="" className="w-full h-full object-cover" />
                     <div className="absolute inset-0 bg-gradient-to-t from-black/40 to-transparent" />
                     <div className="absolute bottom-3 left-3">
                       <h4 className="font-bold text-white text-sm drop-shadow">{c.title}</h4>

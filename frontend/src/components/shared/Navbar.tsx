@@ -6,7 +6,7 @@ import { useTranslation } from "../../context/I18nContext";
 import {
   Clock, CalendarHeart, MapPin, Heart, PenLine,
   Home, Settings, LogOut, Gamepad2, MoreHorizontal,
-  Sun, Moon,
+  Sun, Moon, MessageCircle,
 } from "lucide-react";
 import Avatar from "./Avatar";
 
@@ -14,9 +14,8 @@ const NAV_ITEMS = [
   { path: "/", labelKey: "nav.home", icon: Home },
   { path: "/book", labelKey: "nav.book", icon: Clock },
   { path: "/monthly", labelKey: "nav.monthly", icon: CalendarHeart },
-  { path: "/outings", labelKey: "nav.outings", icon: MapPin },
-  { path: "/wishlist", labelKey: "nav.wishlist", icon: Heart },
   { path: "/diary", labelKey: "nav.diary", icon: PenLine },
+  { path: "/chat", labelKey: "nav.chat", icon: MessageCircle },
   { path: "/minigames", labelKey: "nav.games", icon: Gamepad2 },
   { path: "/more", labelKey: "nav.more", icon: MoreHorizontal },
 ];

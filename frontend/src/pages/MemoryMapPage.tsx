@@ -12,6 +12,7 @@ import {
   Calendar, Trash2, Globe, Search,
 } from "lucide-react";
 import DeleteButton from "../components/shared/DeleteButton";
+import { ClickableImage } from "../components/shared/ImageViewer";
 import "leaflet/dist/leaflet.css";
 
 // Fix default marker icons
@@ -272,7 +273,7 @@ export default function MemoryMapPage() {
               <div className="-m-[1px]">
                 {pin.photo_url ? (
                   <div className="relative">
-                    <img
+                    <ClickableImage
                       src={pin.photo_url}
                       alt={pin.title}
                       className="w-full h-36 object-cover"
@@ -402,7 +403,7 @@ export default function MemoryMapPage() {
                   className="w-full text-left px-4 py-3 hover:bg-warm-50/60 dark:hover:bg-charcoal-700/60 transition-colors flex items-center gap-3 border-b border-warm-200/10 dark:border-charcoal-700/30 last:border-0"
                 >
                   {pin.photo_url ? (
-                    <img
+                    <ClickableImage
                       src={pin.photo_url}
                       alt=""
                       className="w-11 h-11 rounded-xl object-cover shrink-0 shadow-sm"
