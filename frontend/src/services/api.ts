@@ -1,7 +1,7 @@
 import axios from "axios";
 import { Capacitor } from "@capacitor/core";
 
-const SERVER_BASE = "http://47.108.186.1/amory";
+const SERVER_BASE = "http://47.108.186.1";
 
 const api = axios.create({
   baseURL: Capacitor.isNativePlatform() ? `${SERVER_BASE}/api` : "/api",
