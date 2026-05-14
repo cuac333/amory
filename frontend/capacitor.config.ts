@@ -5,9 +5,7 @@ const config: CapacitorConfig = {
   appName: "Amory",
   webDir: "dist",
   server: {
-    // For development — point to Vite dev server
-    // Uncomment the line below and comment out the androidScheme line for local dev
-    // url: "http://192.168.1.X:5173",
+    url: "https://47.108.186.1",
     androidScheme: "https",
   },
   plugins: {

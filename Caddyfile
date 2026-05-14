@@ -1,3 +1,20 @@
-{$DOMAIN:localhost} {
-    reverse_proxy frontend:80
+:80 {
+    redir https://{host}{uri} permanent
+}
+
+{$DOMAIN} {
+    tls internal
+
+    handle_path /amory/api/* {
+        reverse_proxy backend:8000
+    }
+    handle /uploads/* {
+        reverse_proxy backend:8000
+    }
+    handle_path /amory/* {
+        reverse_proxy frontend:80
+    }
+    handle /amory {
+        redir /amory/ permanent
+    }
 }
