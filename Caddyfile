@@ -5,13 +5,15 @@
 {$DOMAIN} {
     tls internal
 
-    handle_path /amory/api/* {
+    handle /amory/api/* {
+        uri strip_prefix /amory
         reverse_proxy backend:8000
     }
     handle /uploads/* {
         reverse_proxy backend:8000
     }
-    handle_path /amory/* {
+    handle /amory/* {
+        uri strip_prefix /amory
         reverse_proxy frontend:80
     }
     handle /amory {
