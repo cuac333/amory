@@ -391,6 +391,8 @@ function WishCard({ item, deleteRequest, currentUserId, onComplete, onDeleteActi
               currentUserId={currentUserId}
               onAction={onDeleteAction}
               size="sm"
+              directDelete={item.is_secret && item.added_by === currentUserId}
+              directDeleteUrl={`/wishlist/${item.id}`}
             />
           </div>
         </div>

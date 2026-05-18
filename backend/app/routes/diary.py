@@ -1,13 +1,14 @@
 import shutil
 from datetime import datetime
 from fastapi import APIRouter, Depends, HTTPException, UploadFile, File
-from sqlmodel import Session, select
+from sqlmodel import Session, select, func
 from app.database import get_session
 from app.auth.dependencies import get_current_user
 from app.models.user import User
-from app.models.diary import DiaryEntry
+from app.models.diary import DiaryEntry, DiaryComment
 from app.schemas.diary import (
     DiaryEntryCreate, DiaryEntryUpdate, DiaryEntryResponse, MoodEntry,
+    DiaryCommentCreate, DiaryCommentResponse,
 )
 from app.config import UPLOADS_IMAGES_DIR
 from app.routes.extras import award_xp
@@ -23,11 +24,15 @@ def require_couple(user: User):
 
 def build_entry_response(entry: DiaryEntry, session: Session) -> DiaryEntryResponse:
     author = session.get(User, entry.user_id)
+    comments_count = session.exec(
+        select(func.count(DiaryComment.id)).where(DiaryComment.diary_entry_id == entry.id)
+    ).one()
     return DiaryEntryResponse(
         id=entry.id, couple_id=entry.couple_id, user_id=entry.user_id,
         user_name=author.name if author else "", content=entry.content,
         mood=entry.mood, photo_url=entry.photo_url, is_shared=entry.is_shared,
         created_at=entry.created_at, updated_at=entry.updated_at,
+        comments_count=comments_count,
     )
 
 
@@ -121,3 +126,43 @@ def get_moods(user: User = Depends(get_current_user), session: Session = Depends
             mood=e.mood, user_id=e.user_id,
         ) for e in entries if e.is_shared or e.user_id == user.id
     ]
+
+
+# --- Diary Comments ---
+
+@router.get("/{entry_id}/comments", response_model=list[DiaryCommentResponse])
+def get_diary_comments(entry_id: int, user: User = Depends(get_current_user), session: Session = Depends(get_session)):
+    entry = session.get(DiaryEntry, entry_id)
+    if not entry:
+        raise HTTPException(status_code=404, detail="日记未找到")
+    # Only allow comments on shared entries or own entries
+    if not entry.is_shared and entry.user_id != user.id:
+        raise HTTPException(status_code=403, detail="无权评论此日记")
+    comments = session.exec(
+        select(DiaryComment).where(DiaryComment.diary_entry_id == entry_id).order_by(DiaryComment.created_at)
+    ).all()
+    result = []
+    for c in comments:
+        author = session.get(User, c.user_id)
+        result.append(DiaryCommentResponse(
+            id=c.id, diary_entry_id=c.diary_entry_id, user_id=c.user_id,
+            user_name=author.name if author else "", content=c.content, created_at=c.created_at,
+        ))
+    return result
+
+
+@router.post("/{entry_id}/comments", response_model=DiaryCommentResponse)
+def add_diary_comment(entry_id: int, data: DiaryCommentCreate, user: User = Depends(get_current_user), session: Session = Depends(get_session)):
+    entry = session.get(DiaryEntry, entry_id)
+    if not entry:
+        raise HTTPException(status_code=404, detail="日记未找到")
+    if not entry.is_shared and entry.user_id != user.id:
+        raise HTTPException(status_code=403, detail="无权评论此日记")
+    comment = DiaryComment(diary_entry_id=entry_id, user_id=user.id, content=data.content)
+    session.add(comment)
+    session.commit()
+    session.refresh(comment)
+    return DiaryCommentResponse(
+        id=comment.id, diary_entry_id=comment.diary_entry_id, user_id=comment.user_id,
+        user_name=user.name, content=comment.content, created_at=comment.created_at,
+    )

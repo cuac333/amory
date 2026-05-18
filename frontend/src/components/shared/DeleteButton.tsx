@@ -11,6 +11,10 @@ interface DeleteButtonProps {
   currentUserId: number;
   onAction: () => void;
   size?: "sm" | "md";
+  /** When true, deletes directly without partner consent (e.g. private diary entries, secret wishlist items) */
+  directDelete?: boolean;
+  /** The direct-delete API endpoint path, e.g. "/diary/123" */
+  directDeleteUrl?: string;
 }
 
 export default function DeleteButton({
@@ -20,6 +24,8 @@ export default function DeleteButton({
   currentUserId,
   onAction,
   size = "sm",
+  directDelete = false,
+  directDeleteUrl,
 }: DeleteButtonProps) {
   const { t } = useTranslation();
   const [showConfirm, setShowConfirm] = useState(false);
@@ -51,6 +57,14 @@ export default function DeleteButton({
     setLoading(true);
     await api.delete(`/deletion-requests/${requestId}/cancel`);
     setLoading(false);
+    onAction();
+  };
+
+  const directDeleteEntity = async () => {
+    setLoading(true);
+    await api.delete(directDeleteUrl!);
+    setLoading(false);
+    setShowConfirm(false);
     onAction();
   };
 
@@ -99,6 +113,41 @@ export default function DeleteButton({
           <X size={iconSize} />
         </button>
       </div>
+    );
+  }
+
+  // Direct delete mode (no partner consent needed)
+  if (directDelete && directDeleteUrl) {
+    if (showConfirm) {
+      return (
+        <div className="flex items-center gap-1.5">
+          <span className="text-xs text-burnt-300">{t("deletion.confirm")}</span>
+          <button
+            onClick={directDeleteEntity}
+            disabled={loading}
+            className="p-1.5 bg-burnt-50 text-burnt-300 rounded-lg hover:bg-burnt-100 transition-colors disabled:opacity-40"
+            title={t("confirm")}
+          >
+            <Check size={iconSize} />
+          </button>
+          <button
+            onClick={() => setShowConfirm(false)}
+            className="p-1.5 bg-warm-50 text-charcoal-400 rounded-lg hover:bg-warm-100 transition-colors"
+            title={t("cancel")}
+          >
+            <X size={iconSize} />
+          </button>
+        </div>
+      );
+    }
+    return (
+      <button
+        onClick={() => setShowConfirm(true)}
+        className="p-1.5 text-warm-300 hover:text-burnt-300 hover:bg-burnt-50 rounded-lg transition-colors"
+        title={t("delete")}
+      >
+        <Trash2 size={iconSize} />
+      </button>
     );
   }
 

@@ -11,6 +11,7 @@ import { useAuth } from "../context/AuthContext";
 import { useTranslation } from "../context/I18nContext";
 import DeleteButton from "../components/shared/DeleteButton";
 import { ClickableImage } from "../components/shared/ImageViewer";
+import DiaryCommentSection from "../components/shared/DiaryCommentSection";
 
 import type { DiaryEntry, DeletionRequest } from "../types";
 
@@ -468,7 +469,7 @@ function DiaryCard({ entry, isOwn, deleteRequest, currentUserId, onDeleteAction,
 
         {/* Footer */}
         <div className="flex items-center justify-between mt-3 pt-2 border-t border-warm-100/50 dark:border-charcoal-700/50">
-          <div className="flex items-center gap-1.5">
+          <div className="flex items-center gap-2">
             {entry.is_shared ? (
               <span className="text-[10px] text-verdigris-500 dark:text-verdigris-400 flex items-center gap-1 font-medium">
                 <Globe size={9} /> {t("diary.shared")}
@@ -478,6 +479,9 @@ function DiaryCard({ entry, isOwn, deleteRequest, currentUserId, onDeleteAction,
                 <Lock size={9} /> {t("diary.private")}
               </span>
             )}
+            {entry.is_shared && (
+              <DiaryCommentSection entryId={entry.id} commentsCount={entry.comments_count} />
+            )}
           </div>
           <DeleteButton
             entityType="diary_entry"
@@ -486,6 +490,8 @@ function DiaryCard({ entry, isOwn, deleteRequest, currentUserId, onDeleteAction,
             currentUserId={currentUserId}
             onAction={onDeleteAction}
             size="sm"
+            directDelete={isOwn && !entry.is_shared}
+            directDeleteUrl={`/diary/${entry.id}`}
           />
         </div>
       </div>

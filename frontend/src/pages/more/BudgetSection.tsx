@@ -301,14 +301,14 @@ export default function BudgetSection() {
           <div className="w-9 h-9 rounded-xl bg-gradient-to-br from-verdigris-400 to-verdigris-500 flex items-center justify-center mx-auto mb-1.5">
             <Coins size={16} className="text-white" />
           </div>
-          <p className="text-lg font-bold text-charcoal-700 dark:text-warm-100">${monthTotal.toLocaleString()}</p>
+          <p className="text-lg font-bold text-charcoal-700 dark:text-warm-100">¥{monthTotal.toLocaleString()}</p>
           <p className="text-[10px] text-charcoal-300 dark:text-warm-400">{t("budget.stat.total")}</p>
         </div>
         <div className="bg-white dark:bg-charcoal-800 rounded-2xl p-3 shadow-sm border border-warm-200/30 dark:border-charcoal-700/50 text-center">
           <div className="w-9 h-9 rounded-xl bg-gradient-to-br from-tuscan-300 to-tuscan-400 flex items-center justify-center mx-auto mb-1.5">
             <CircleDollarSign size={16} className="text-white" />
           </div>
-          <p className="text-lg font-bold text-charcoal-700 dark:text-warm-100">${avgExpense > 0 ? Math.round(avgExpense).toLocaleString() : "0"}</p>
+          <p className="text-lg font-bold text-charcoal-700 dark:text-warm-100">¥{avgExpense > 0 ? Math.round(avgExpense).toLocaleString() : "0"}</p>
           <p className="text-[10px] text-charcoal-300 dark:text-warm-400">{t("budget.stat.avg")}</p>
         </div>
       </div>
@@ -382,12 +382,12 @@ export default function BudgetSection() {
                 <div>
                   <p className="text-[10px] text-warm-400 uppercase tracking-wider mb-0.5">{t("budget.budget")}</p>
                   <p className="text-xl font-bold text-white">
-                    ${effectiveBudget.toLocaleString()}
+                    ¥{effectiveBudget.toLocaleString()}
                   </p>
                   {rollover > 0 && (
                     <p className="text-[9px] text-emerald-300/80 flex items-center gap-0.5 mt-0.5">
                       <ArrowUpRight size={9} />
-                      +${rollover.toLocaleString()} {t("budget.accumulated")}
+                      +¥{rollover.toLocaleString()} {t("budget.accumulated")}
                     </p>
                   )}
                 </div>
@@ -395,13 +395,13 @@ export default function BudgetSection() {
                   <p className="text-[10px] text-warm-400 uppercase tracking-wider mb-0.5">{t("budget.spent")}</p>
                   <p className="text-xl font-bold text-sandy-200 flex items-center gap-1">
                     <ArrowDownRight size={14} className="text-sandy-300/60" />
-                    ${monthTotal.toLocaleString()}
+                    ¥{monthTotal.toLocaleString()}
                   </p>
                 </div>
                 <div>
                   <p className="text-[10px] text-warm-400 uppercase tracking-wider mb-0.5">{t("budget.remaining")}</p>
                   <p className={`text-xl font-bold ${remaining >= 0 ? "text-emerald-300" : "text-red-300"}`}>
-                    ${Math.abs(remaining).toLocaleString()}
+                    ¥{Math.abs(remaining).toLocaleString()}
                   </p>
                 </div>
               </div>
@@ -419,7 +419,7 @@ export default function BudgetSection() {
                 </div>
                 <div className="flex justify-between">
                   <p className="text-[10px] text-warm-400">
-                    {t("budget.base")} ${selectedMonthBudgetBase.toLocaleString()}
+                    {t("budget.base")} ¥{selectedMonthBudgetBase.toLocaleString()}
                   </p>
                   <p className="text-[10px] text-warm-400 font-medium">{budgetPct.toFixed(0)}% {t("budget.used.pct")}</p>
                 </div>
@@ -430,13 +430,13 @@ export default function BudgetSection() {
               <div>
                 <p className="text-[10px] text-warm-400 uppercase tracking-wider mb-0.5">{t("budget.spent")}</p>
                 <p className="text-2xl font-bold text-sandy-200">
-                  ${monthTotal.toLocaleString()}
+                  ¥{monthTotal.toLocaleString()}
                 </p>
               </div>
               <div>
                 <p className="text-[10px] text-warm-400 uppercase tracking-wider mb-0.5">{t("budget.total.historic")}</p>
                 <p className="text-2xl font-bold text-white">
-                  ${(summary?.total ?? 0).toLocaleString()}
+                  ¥{(summary?.total ?? 0).toLocaleString()}
                 </p>
               </div>
             </div>
@@ -446,7 +446,7 @@ export default function BudgetSection() {
             <div className="mt-3 pt-3 border-t border-white/10">
               <div className="flex justify-between items-center">
                 <span className="text-[10px] text-warm-400">{t("budget.total.historic")}</span>
-                <span className="text-sm font-bold text-warm-300">${(summary?.total ?? 0).toLocaleString()}</span>
+                <span className="text-sm font-bold text-warm-300">¥{(summary?.total ?? 0).toLocaleString()}</span>
               </div>
             </div>
           )}
@@ -505,7 +505,7 @@ export default function BudgetSection() {
                     </motion.button>
                   </div>
                   {summary?.default_budget ? (
-                    <p className="text-[10px] text-charcoal-300 dark:text-warm-400">{t("budget.current")} ${summary.default_budget.toLocaleString()}</p>
+                    <p className="text-[10px] text-charcoal-300 dark:text-warm-400">{t("budget.current")} ¥{summary.default_budget.toLocaleString()}</p>
                   ) : null}
                 </div>
 
@@ -517,7 +517,7 @@ export default function BudgetSection() {
                   {hasMonthBudget ? (
                     <div className="flex items-center gap-2 bg-verdigris-50 dark:bg-verdigris-900/20 rounded-xl px-3 py-2">
                       <span className="text-sm font-bold text-charcoal-600 dark:text-warm-200 flex-1">
-                        ${monthBudgetAmount.toLocaleString()}
+                        ¥{monthBudgetAmount.toLocaleString()}
                       </span>
                       <button
                         onClick={removeMonthBudget}
@@ -528,7 +528,7 @@ export default function BudgetSection() {
                     </div>
                   ) : (
                     <p className="text-[10px] text-charcoal-300 dark:text-warm-400">
-                      {t("budget.using.default")} ${(summary?.default_budget ?? 0).toLocaleString()}
+                      {t("budget.using.default")} ¥{(summary?.default_budget ?? 0).toLocaleString()}
                     </p>
                   )}
                   <div className="flex gap-2">
@@ -649,7 +649,7 @@ export default function BudgetSection() {
                   arcLinkLabelsColor={{ from: "color" }}
                   arcLabelsSkipAngle={20}
                   arcLabelsTextColor="#fff"
-                  valueFormat={(v) => `$${v.toLocaleString()}`}
+                  valueFormat={(v) => `¥${v.toLocaleString()}`}
                   enableArcLinkLabels={pieData.length <= 6}
                   enableArcLabels={false}
                   legends={pieData.length > 6 ? [{
@@ -693,12 +693,12 @@ export default function BudgetSection() {
                     tickPadding: 8,
                     format: (v) => {
                       const n = Number(v);
-                      return n >= 1000000 ? `$${(n / 1000000).toFixed(1)}M` : `$${(n / 1000).toFixed(0)}k`;
+                      return n >= 1000000 ? `¥${(n / 1000000).toFixed(1)}M` : `¥${(n / 1000).toFixed(0)}k`;
                     },
                   }}
                   enableGridY={false}
                   enableLabel={false}
-                  valueFormat={(v) => `$${Number(v).toLocaleString()}`}
+                  valueFormat={(v) => `¥${Number(v).toLocaleString()}`}
                   theme={{ axis: { ticks: { text: { fontSize: 10, fill: "#999" } } } }}
                   legends={summary && (summary.default_budget > 0 || Object.keys(summary.per_month_budgets).length > 0) ? [{
                     dataFrom: "keys",
@@ -966,7 +966,7 @@ export default function BudgetSection() {
                         </div>
                       </div>
                       <span className="text-sm font-bold text-charcoal-700 dark:text-warm-100 shrink-0">
-                        ${exp.amount.toLocaleString()}
+                        ¥{exp.amount.toLocaleString()}
                       </span>
                       <DeleteButton
                         entityType="date_expense"

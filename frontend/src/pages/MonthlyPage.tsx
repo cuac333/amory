@@ -10,6 +10,7 @@ import api from "../services/api";
 import { useAuth } from "../context/AuthContext";
 import { useTranslation } from "../context/I18nContext";
 import DeleteButton from "../components/shared/DeleteButton";
+import { ClickableImage } from "../components/shared/ImageViewer";
 
 import type { MonthlyActivity, Streak, DeletionRequest } from "../types";
 
@@ -66,7 +67,7 @@ export default function MonthlyPage() {
   };
 
   const submitEntry = async (activityId: number) => {
-    if (!file || feelingText.length < 50) return;
+    if (!file || !feelingText.trim()) return;
     setSubmitting(true);
     const formData = new FormData();
     formData.append("file", file);
@@ -374,7 +375,6 @@ function CurrentMonthCard({ activity, user, partnerName, file, filePreview, feel
   const CatIcon = cat.icon;
   const userSubmitted = activity.entries.some((e) => e.user_id === user?.id);
   const progress = activity.status === "completed" ? 100 : activity.entries.length === 1 ? 50 : 0;
-  const textProgress = Math.min(100, (feelingText.length / 50) * 100);
 
   return (
     <motion.div
@@ -478,7 +478,7 @@ function CurrentMonthCard({ activity, user, partnerName, file, filePreview, feel
                 animate={{ opacity: 1, x: 0 }}
                 className="bg-warm-50/80 dark:bg-charcoal-700/50 rounded-2xl p-3.5 flex gap-3 border border-warm-200/20 dark:border-charcoal-600/20"
               >
-                <img src={entry.photo_url} alt="" className="w-16 h-16 rounded-xl object-cover shadow-sm" />
+                <ClickableImage src={entry.photo_url} alt="" className="w-16 h-16 rounded-xl object-cover shadow-sm" />
                 <div className="flex-1 min-w-0">
                   <div className="flex items-center gap-2 mb-1">
                     <div className="w-5 h-5 rounded-full bg-gradient-to-br from-burnt-300 to-sandy-300 flex items-center justify-center text-white text-[9px] font-bold">
@@ -551,30 +551,11 @@ function CurrentMonthCard({ activity, user, partnerName, file, filePreview, feel
                 className="w-full px-4 py-3 bg-warm-50 dark:bg-charcoal-700 border border-warm-200 dark:border-charcoal-600 rounded-xl text-sm outline-none focus:ring-2 focus:ring-tuscan-200 resize-none"
                 rows={3}
               />
-              {/* Character progress ring */}
-              <div className="absolute bottom-2.5 right-2.5 flex items-center gap-2">
-                <div className="relative w-6 h-6">
-                  <svg className="w-6 h-6 -rotate-90" viewBox="0 0 24 24">
-                    <circle cx="12" cy="12" r="10" fill="none" stroke="currentColor" strokeWidth="2" className="text-warm-200 dark:text-charcoal-600" />
-                    <circle
-                      cx="12" cy="12" r="10" fill="none" stroke="currentColor" strokeWidth="2"
-                      strokeDasharray={`${(textProgress / 100) * 62.83} 62.83`}
-                      className={textProgress >= 100 ? "text-verdigris-400" : "text-burnt-300"}
-                    />
-                  </svg>
-                  {textProgress >= 100 && (
-                    <CheckCircle2 size={10} className="absolute inset-0 m-auto text-verdigris-500" />
-                  )}
-                </div>
-                <span className={`text-[10px] font-medium ${feelingText.length >= 50 ? "text-verdigris-500" : "text-charcoal-300 dark:text-charcoal-500"}`}>
-                  {feelingText.length}/50
-                </span>
-              </div>
             </div>
 
             <button
               onClick={() => onSubmit(activity.id)}
-              disabled={submitting || !file || feelingText.length < 50}
+              disabled={submitting || !file || !feelingText.trim()}
               className="w-full py-3 bg-gradient-to-r from-burnt-300 to-sandy-300 text-white rounded-xl text-sm font-medium disabled:opacity-40 hover:from-burnt-400 hover:to-sandy-400 transition-all shadow-lg shadow-burnt-200/20 flex items-center justify-center gap-2"
             >
               {submitting ? (
@@ -693,7 +674,7 @@ function PastActivityCard({ activity, user, expanded, onToggle, deleteRequest, o
                   <div className="space-y-2.5">
                     {activity.entries.map((entry) => (
                       <div key={entry.id} className="bg-warm-50/80 dark:bg-charcoal-700/50 rounded-xl p-3 flex gap-3 border border-warm-200/15 dark:border-charcoal-600/15">
-                        <img src={entry.photo_url} alt="" className="w-14 h-14 rounded-lg object-cover shadow-sm" />
+                        <ClickableImage src={entry.photo_url} alt="" className="w-14 h-14 rounded-lg object-cover shadow-sm" />
                         <div className="flex-1 min-w-0">
                           <div className="flex items-center gap-1.5 mb-0.5">
                             <div className="w-4 h-4 rounded-full bg-gradient-to-br from-burnt-300 to-sandy-300 flex items-center justify-center text-white text-[8px] font-bold">

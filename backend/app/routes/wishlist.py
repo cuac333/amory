@@ -27,11 +27,11 @@ def get_wishlist(category: str = None, user: User = Depends(get_current_user), s
         query = query.where(WishlistItem.category == category)
     items = session.exec(query.order_by(WishlistItem.created_at.desc())).all()
 
-    # Filter secret items: only show to the OTHER partner
+    # Filter secret items: only show to the creator (not the partner)
     result = []
     for item in items:
-        if item.is_secret and item.added_by == user.id:
-            continue  # Don't show your own secret gifts
+        if item.is_secret and item.added_by != user.id:
+            continue  # Don't show partner's secret gifts to you
         result.append(WishlistItemResponse(
             id=item.id, couple_id=item.couple_id, added_by=item.added_by,
             category=item.category, title=item.title, description=item.description,
@@ -46,13 +46,10 @@ def get_wishlist(category: str = None, user: User = Depends(get_current_user), s
 def create_wishlist_item(data: WishlistItemCreate, user: User = Depends(get_current_user), session: Session = Depends(get_session)):
     couple_id = require_couple(user)
 
-    # For secret items, set visible_to as the partner
+    # For secret items, set visible_to as the creator (only they should see it)
     visible_to = None
     if data.is_secret:
-        partner = session.exec(
-            select(User).where(User.couple_id == couple_id, User.id != user.id)
-        ).first()
-        visible_to = partner.id if partner else None
+        visible_to = user.id
 
     item = WishlistItem(
         couple_id=couple_id, added_by=user.id, visible_to=visible_to,

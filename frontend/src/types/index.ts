@@ -175,6 +175,16 @@ export interface DiaryEntry {
   is_shared: boolean;
   created_at: string;
   updated_at: string;
+  comments_count: number;
+}
+
+export interface DiaryComment {
+  id: number;
+  diary_entry_id: number;
+  user_id: number;
+  user_name: string;
+  content: string;
+  created_at: string;
 }
 
 export interface MoodEntry {

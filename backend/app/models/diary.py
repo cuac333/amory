@@ -13,3 +13,11 @@ class DiaryEntry(SQLModel, table=True):
     is_shared: bool = Field(default=True)
     created_at: datetime = Field(default_factory=datetime.utcnow)
     updated_at: datetime = Field(default_factory=datetime.utcnow)
+
+
+class DiaryComment(SQLModel, table=True):
+    id: Optional[int] = Field(default=None, primary_key=True)
+    diary_entry_id: int = Field(foreign_key="diaryentry.id", index=True)
+    user_id: int = Field(foreign_key="user.id")
+    content: str = Field(max_length=500)
+    created_at: datetime = Field(default_factory=datetime.utcnow)

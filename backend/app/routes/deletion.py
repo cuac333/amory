@@ -9,7 +9,7 @@ from app.models.deletion import DeletionRequest
 from app.models.monthly import MonthlyActivity, MonthlyEntry
 from app.models.outing import Outing, BucketListItem
 from app.models.wishlist import WishlistItem
-from app.models.diary import DiaryEntry
+from app.models.diary import DiaryEntry, DiaryComment
 from app.models.extras import (
     TimeCapsule, OpenWhenLetter, MemoryPin, ScratchCard, Voucher,
     SecretLetterGame, LoveReason, EventCountdown, BingoCell,
@@ -110,6 +110,12 @@ def delete_entity(entity_type: str, entity_id: int, session: Session):
         ).all()
         for v in votes:
             session.delete(v)
+    elif entity_type == "diary_entry":
+        comments = session.exec(
+            select(DiaryComment).where(DiaryComment.diary_entry_id == entity_id)
+        ).all()
+        for c in comments:
+            session.delete(c)
 
     model = ENTITY_MODEL_MAP.get(entity_type)
     if model:
